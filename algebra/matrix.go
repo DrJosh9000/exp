@@ -16,18 +16,18 @@
 
 package algebra
 
-// Matrix implements matrix operations generically over a field.
-type Matrix[T Field[T]] Grid[T]
+// Matrix implements matrix operations generically over a ring.
+type Matrix[T Ring[T]] Grid[T]
 
 // MakeMatrix returns a zero matrix of the given height and width.
-func MakeMatrix[T Field[T]](h, w int) Matrix[T] {
+func MakeMatrix[T Ring[T]](h, w int) Matrix[T] {
 	return Matrix[T](MakeGrid[T](h, w))
 }
 
 // DiagonalMatrix returns a square matrix with all zeros except for a given
 // value x used for the main diagonal. This can be used to create the identity
 // matrix.
-func DiagonalMatrix[T Field[T]](n int, x T) Matrix[T] {
+func DiagonalMatrix[T Ring[T]](n int, x T) Matrix[T] {
 	m := MakeMatrix[T](n, n)
 	for i := 0; i < n; i++ {
 		m[i][i] = x

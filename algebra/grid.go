@@ -65,7 +65,7 @@ func (g Grid[T]) FlipHorizontal() Grid[T] {
 	ng := MakeGrid[T](g.Size())
 	for j, row := range g {
 		for i := range row {
-			ng[j][i] = row[w-i-1]
+			ng[j][i] = row[len(row)-i-1]
 		}
 	}
 	return ng
@@ -76,7 +76,7 @@ func (g Grid[T]) FlipVertical() Grid[T] {
 	ng := MakeGrid[T](g.Size())
 	for j, row := range g {
 		for i := range row {
-			ng[h-j-1][i] = row[i]
+			ng[len(g)-j-1][i] = row[i]
 		}
 	}
 	return ng
