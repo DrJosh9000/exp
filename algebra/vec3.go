@@ -22,7 +22,7 @@ import "fmt"
 var _ Vector[Vec3[Real], Real] = Vec3[Real]{}
 
 // Vec3 implements a 3-dimensional vector generically, over any division ring.
-type Vec3[T DivisionRing[T]] struct {
+type Vec3[T Ring[T]] struct {
 	X, Y, Z T
 }
 

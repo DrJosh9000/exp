@@ -25,9 +25,9 @@ var (
 	_ Vector[Quaternion[Real], Real] = Quaternion[Real]{}
 )
 
-// Quaternion implements quaternions generically as a division algebra over some 
-// other division ring. Traditional quaternions (ℍ) use ℝ.
-type Quaternion[T DivisionRing[T]] [4]T
+// Quaternion implements quaternions generically as an algebra over some 
+// other ring. Traditional quaternions (ℍ) use ℝ.
+type Quaternion[T Ring[T]] [4]T
 
 func (q Quaternion[T]) String() string { 
 	return fmt.Sprint("%v + %v𝕚 + %v𝕛 + %v𝕜", q[0], q[1], q[2], q[3]) 
@@ -51,9 +51,14 @@ func (q Quaternion[T]) Dot(r Quaternion[T]) T {
 	return q[0].Mul(r[0]).Add(q[1].Mul(r[1])).Add(q[2].Mul(r[2])).Add(q[3].Mul(r[3]))
 }
 
-// Inv returns the inverse quaternion.
+// Inv returns the inverse quaternion, or panics (if T is not a division ring or
+// q has zero norm).
 func (q Quaternion[T]) Inv() Quaternion[T] {
-	return q.Conjugate().ScalarMul(q.Dot(q).Inv())
+	r, dr := any(q.Dot(q)).(DivisionRing[T])
+	if !dr {
+		panic("cannot invert a quaternion over a ring without inverses")
+	}
+	return q.Conjugate().ScalarMul(r.Inv())
 }
 
 // ScalarMul multiplies q by a scalar.
