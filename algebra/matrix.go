@@ -16,100 +16,83 @@
 
 package algebra
 
-// Matrix is, broadly speaking, a "2D array" generic type.
-type Matrix[T any] [][]T
+// Matrix implements matrix operations generically over a field.
+type Matrix[T Field[T]] Grid[T]
 
-// MakeMatrix makes a matrix of width w and height h.
-func MakeMatrix[T any](w, h int) Matrix[T] {
-	g := make(Matrix[T], h)
-	for j := range g {
-		g[j] = make([]T, w)
+// MakeMatrix returns a zero matrix of the given height and width.
+func MakeMatrix[T Field[T]](h, w int) Matrix[T] {
+	return Matrix[T](MakeGrid[T](h, w))
+}
+
+// DiagonalMatrix returns a square matrix with all zeros except for a given
+// value x used for the main diagonal. This can be used to create the identity
+// matrix.
+func DiagonalMatrix[T Field[T]](n int, x T) Matrix[T] {
+	m := MakeMatrix[T](n, n)
+	for i := 0; i < n; i++ {
+		m[i][i] = x
 	}
-	return g
+	return m
 }
 
-// Size returns the width and height of the matrix. If the height is zero the
-// width will also be zero.
-func (g Matrix[T]) Size() (w, h int) {
-	h = len(g)
-	if h == 0 {
-		return 0, 0
-	} 
-	return len(g[0]), h
-}
+// Size returns the dimensions of the matrix (number of rows and columns).
+func (m Matrix[T]) Size() (h, w int) { return Grid[T](m).Size() }
 
-// Fill fills the matrix with the value v.
-func (g Matrix[T]) Fill(v T) {
-	for _, row := range g {
-		for i := range row {
-			row[i] = v
+// Transpose returns the matrix reflected across the main diagonal.
+func (m Matrix[T]) Transpose() Matrix[T] { return Matrix[T](Grid[T](m).Transpose())}
+
+// Add adds two matrices.
+func (m Matrix[T]) Add(n Matrix[T]) Matrix[T] {
+	mh, mw := m.Size()
+	nh, nw := n.Size()
+	if mh != nh || mw != nw {
+		panic("adding matrices of incompatible sizes")
+	}
+	for j := range m {
+		for i := range m[j] {
+			m[j][i] = m[j][i].Add(n[j][i])
 		}
 	}
+	return m
 }
 
-// Transpose returns a new matrix reflected about the diagonal.
-func (g Matrix[T]) Transpose() Matrix[T] {
-	h, w := g.Size()
-	ng := MakeMatrix[T](w, h)
-	for j, row := range g {
-		for i := range row {
-			ng[i][j] = row[i]
+// Neg returns the matrix with all entries negated.
+func (m Matrix[T]) Neg() Matrix[T] {
+	for j := range m {
+		for i := range m[j] {
+			m[j][i] = m[j][i].Neg()
 		}
 	}
-	return ng
+	return m
 }
 
-
-// FlipHorizontal returns a new matrix flipped horizontally (left becomes right).
-func (g Matrix[T]) FlipHorizontal() Matrix[T] {
-	w, h := g.Size()
-	ng := MakeMatrix[T](w, h)
-	for j, row := range g {
-		for i := range row {
-			ng[j][i] = row[w-i-1]
+// ScalarMul returns the matrix with entries multiplied by k.
+func (m Matrix[T]) ScalarMul(k T) Matrix[T] {
+	for j := range m {
+		for i := range m[j] {
+			m[j][i] = k.Mul(m[j][i])
 		}
 	}
-	return ng
+	return m
 }
 
-// FlipVertical returns a new matrix flipped vertically (top becomes bottom).
-func (g Matrix[T]) FlipVertical() Matrix[T] {
-	w, h := g.Size()
-	ng := MakeMatrix[T](w, h)
-	for j, row := range g {
-		for i := range row {
-			ng[h-j-1][i] = row[i]
+// Mul multiplies two matrices of compatible size (the width of m must equal
+// the height of n)
+func (m Matrix[T]) Mul(n Matrix[T]) Matrix[T] {
+	mh, mw := m.Size()
+	nh, nw := n.Size()
+	if mw != nh {
+		panic("multiplying matrices of incompatible sizes")
+	}
+	o := MakeMatrix[T](mh, nw)
+	for i := range o {
+		for j := range o[i] {
+			for k := 0; k < mw; k++ {
+				o[i][j] = o[i][j].Add(m[i][k].Mul(n[k][j]))
+			}
 		}
 	}
-	return ng
+	return o
 }
 
-// Rotate returns a new matrix rotated clockwise by 90 degrees.
-func (g Matrix[T]) Rotate() Matrix[T] {
-	h, w := g.Size()
-	ng := MakeMatrix[T](w, h)
-	for j, row := range g {
-		for i := range row {
-			ng[i][w-j-1] = row[i]
-		}
-	}
-	return ng
-}
-
-// DigitsToMatrix converts a grid of digits into a Matrix[int].
-func DigitsToMatrix(digits []string) Matrix[int] {
-	h := len(digits)
-	if h == 0 {
-		return nil
-	}
-	w := len(digits[0])
-	g := MakeMatrix[int](w, h)
-	for j, row := range digits {
-		for i, d := range row {
-			g[j][i] = int(d - '0')
-		}
-	}
-	return g
-}
-
-// TODO: more matrixey stuff, like matrix multiplication and applying to vectors
+// TODO: inverses
