@@ -16,7 +16,7 @@
 
 package algebra
 
-// Grid is, broadly speaking, a "2D array" generic type.
+// Grid is a "2D array" generic type.
 type Grid[T any] [][]T
 
 // MakeGrid makes a Grid of width w and height h.

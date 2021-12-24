@@ -16,83 +16,110 @@
 
 package algebra
 
-// Matrix implements matrix operations generically over a ring.
-type Matrix[T Ring[T]] Grid[T]
+// Matrix implements matrix algebra on Grid[T] given a ring R.
+type Matrix[T any, R Ring[T]] struct{}
 
-// MakeMatrix returns a zero matrix of the given height and width.
-func MakeMatrix[T Ring[T]](h, w int) Matrix[T] {
-	return Matrix[T](MakeGrid[T](h, w))
-}
-
-// DiagonalMatrix returns a square matrix with all zeros except for a given
-// value x used for the main diagonal. This can be used to create the identity
-// matrix.
-func DiagonalMatrix[T Ring[T]](n int, x T) Matrix[T] {
-	m := MakeMatrix[T](n, n)
-	for i := 0; i < n; i++ {
-		m[i][i] = x
-	}
-	return m
-}
-
-// Size returns the dimensions of the matrix (number of rows and columns).
-func (m Matrix[T]) Size() (h, w int) { return Grid[T](m).Size() }
-
-// Transpose returns the matrix reflected across the main diagonal.
-func (m Matrix[T]) Transpose() Matrix[T] { return Matrix[T](Grid[T](m).Transpose())}
-
-// Add adds two matrices.
-func (m Matrix[T]) Add(n Matrix[T]) Matrix[T] {
-	mh, mw := m.Size()
-	nh, nw := n.Size()
-	if mh != nh || mw != nw {
-		panic("adding matrices of incompatible sizes")
-	}
-	for j := range m {
-		for i := range m[j] {
-			m[j][i] = m[j][i].Add(n[j][i])
+// ZeroMatrix returns a zero matrix of size h x w.
+func ZeroMatrix[T any, R Ring[T]](h, w int) Grid[T] {
+	var r R
+	m := MakeGrid[T](h, w)
+	for i := range m {
+		for j := range m[i] {
+			m[i][j] = r.Zero()
 		}
 	}
 	return m
+}
+
+// IdentityMatrix returns an identity matrix of size n.
+func IdentityMatrix[T any, R Ring[T]](n int) Grid[T] {
+	var r R
+	m := MakeGrid[T](n, n)
+	for i := range m {
+		for j := range m[i] {
+			if i == j {
+				m[i][j] = r.Identity()
+			} else {
+				m[i][j] = r.Zero()
+			}
+		}
+	}
+	return m
+}
+
+// Add adds two matrices.
+func (Matrix[T, R]) Add(m, n Grid[T]) Grid[T] {
+	h, w := m.Size()
+	nh, nw := n.Size()
+	if h != nh || w != nw {
+		panic("adding matrices of incompatible sizes")
+	}
+	o := MakeGrid[T](h, w)
+	var r R
+	for i := range o {
+		for j := range o[i] {
+			o[i][j] = r.Add(m[i][j], n[i][j])
+		}
+	}
+	return o
 }
 
 // Neg returns the matrix with all entries negated.
-func (m Matrix[T]) Neg() Matrix[T] {
-	for j := range m {
-		for i := range m[j] {
-			m[j][i] = m[j][i].Neg()
+func (Matrix[T, R]) Neg(m Grid[T]) Grid[T] {
+	var r R
+	o := MakeGrid[T](m.Size())
+	for i := range o {
+		for j := range o[i] {
+			o[i][j] = r.Neg(m[i][j])
 		}
 	}
-	return m
+	return o
 }
 
 // ScalarMul returns the matrix with entries multiplied by k.
-func (m Matrix[T]) ScalarMul(k T) Matrix[T] {
-	for j := range m {
-		for i := range m[j] {
-			m[j][i] = k.Mul(m[j][i])
+func (Matrix[T, R]) ScalarMul(k T, m Grid[T]) Grid[T] {
+	var r R
+	o := MakeGrid[T](m.Size())
+	for i := range o {
+		for j := range o[i] {
+			o[i][j] = r.Mul(k, m[i][j])
 		}
 	}
-	return m
+	return o
 }
 
 // Mul multiplies two matrices of compatible size (the width of m must equal
 // the height of n)
-func (m Matrix[T]) Mul(n Matrix[T]) Matrix[T] {
+func (Matrix[T, R]) Mul(m, n Grid[T]) Grid[T] {
 	mh, mw := m.Size()
 	nh, nw := n.Size()
 	if mw != nh {
 		panic("multiplying matrices of incompatible sizes")
 	}
-	o := MakeMatrix[T](mh, nw)
+	var r R
+	o := ZeroMatrix[T, R](mh, nw)
 	for i := range o {
 		for j := range o[i] {
 			for k := 0; k < mw; k++ {
-				o[i][j] = o[i][j].Add(m[i][k].Mul(n[k][j]))
+				o[i][j] = r.Add(o[i][j], r.Mul(m[i][k], n[k][j]))
 			}
 		}
 	}
 	return o
 }
 
-// TODO: inverses
+
+/*
+// Inv returns the matrix inverse, or panics if T is not a division ring or
+// the matrix is singular.
+func (m Matrix[T]) Inv() Matrix[T] {
+	h, w := m.Size()
+	if h == 0 || w == 0 {
+		return m
+	}
+	if h != w {
+		panic("inverting non-square matrix")
+	}
+
+}
+*/

@@ -20,62 +20,104 @@ import "fmt"
 
 var (
 	// ℍ is a division ring.
-	_ DivisionRing[Quaternion[Real]] = Quaternion[Real]{}
+	_ DivisionRing[[4]float64] = Quaternion[float64, Real]{}
 	// ℍ is also a vector space over the reals.
-	_ Vector[Quaternion[Real], Real] = Quaternion[Real]{}
+	_ VectorSpace[[4]float64, float64] = Quaternion[float64, Real]{}
 )
 
-// Quaternion implements quaternions generically as an algebra over some 
+// Quaternion implements quaternions generically as an algebra over some
 // other ring. Traditional quaternions (ℍ) use ℝ.
-type Quaternion[T Ring[T]] [4]T
+type Quaternion[T any, R Ring[T]] struct{}
 
-func (q Quaternion[T]) String() string { 
-	return fmt.Sprint("%v + %v𝕚 + %v𝕛 + %v𝕜", q[0], q[1], q[2], q[3]) 
+// Format formats x into a string.
+func (Quaternion[T, R]) Format(x [4]T) string {
+	return fmt.Sprint("%v + %v𝕚 + %v𝕛 + %v𝕜", x[0], x[1], x[2], x[3])
 }
 
-func (q Quaternion[T]) Neg() Quaternion[T] {
-	return Quaternion[T]{q[0].Neg(), q[1].Neg(), q[2].Neg(), q[3].Neg()}
+// Add returns x+y.
+func (Quaternion[T, R]) Add(x, y [4]T) [4]T {
+	var r R
+	return [4]T{
+		r.Add(x[0], y[0]), 
+		r.Add(x[1], y[1]), 
+		r.Add(x[2], y[2]), 
+		r.Add(x[3], y[3]),
+	}
 }
 
-func (q Quaternion[T]) Add(r Quaternion[T]) Quaternion[T] {
-	return Quaternion[T]{q[0].Add(r[0]), q[1].Add(r[1]), q[2].Add(r[2]), q[3].Add(r[3])}
+// Neg returns -x.
+func (Quaternion[T, R]) Neg(x [4]T) [4]T {
+	var r R
+	return [4]T{r.Neg(x[0]), r.Neg(x[1]), r.Neg(x[2]), r.Neg(x[3])}
+}
+
+// Zero returns 0 + 0𝕚 + 0𝕛 + 0𝕜
+func (Quaternion[T, R]) Zero() [4]T { 
+	var r R
+	return [4]T{r.Zero(), r.Zero(), r.Zero(), r.Zero()}
+}
+
+// Identity returns 1 + 0𝕚 + 0𝕛 + 0𝕜
+func (Quaternion[T, R]) Identity() [4]T { 
+	var r R
+	return [4]T{r.Identity(), r.Zero(), r.Zero(), r.Zero()}
 }
 
 // Conjugate returns the quaternion conjugate. This is equal to the inverse
 // for rotation quaternions (those with norm 1).
-func (q Quaternion[T]) Conjugate() Quaternion[T] {
-	return Quaternion[T]{q[0], q[1].Neg(), q[2].Neg(), q[3].Neg()}
+func (Quaternion[T, R]) Conjugate(x [4]T) [4]T {
+	var r R
+	return [4]T{x[0], r.Neg(x[1]), r.Neg(x[2]), r.Neg(x[3])}
 }
 
-func (q Quaternion[T]) Dot(r Quaternion[T]) T {
-	return q[0].Mul(r[0]).Add(q[1].Mul(r[1])).Add(q[2].Mul(r[2])).Add(q[3].Mul(r[3]))
+// Dot returns the dot product of q with r (treating them as 4D vectors).
+func (Quaternion[T, R]) Dot(x, y [4]T) T {
+	var r R
+	s := r.Mul(x[0], y[0])
+	s = r.Add(s, r.Mul(x[1], y[1]))
+	s = r.Add(s, r.Mul(x[2], y[2]))
+	s = r.Add(s, r.Mul(x[3], y[3]))
+	return s
 }
 
-// Inv returns the inverse quaternion, or panics (if T is not a division ring or
-// q has zero norm).
-func (q Quaternion[T]) Inv() Quaternion[T] {
-	r, dr := any(q.Dot(q)).(DivisionRing[T])
-	if !dr {
-		panic("cannot invert a quaternion over a ring without inverses")
-	}
-	return q.Conjugate().ScalarMul(r.Inv())
+// Inv returns x⁻¹, or panics if R is not a division ring or x.x has no inverse.
+func (q Quaternion[T, R]) Inv(x [4]T) [4]T {
+	var r R
+	dr := any(r).(DivisionRing[T])
+	d := dr.Inv(q.Dot(x, x))
+	return q.ScalarMul(d, q.Conjugate(x))
 }
 
-// ScalarMul multiplies q by a scalar.
-func (q Quaternion[T]) ScalarMul(x T) Quaternion[T] {
-	return Quaternion[T]{q[0].Mul(x), q[1].Mul(x), q[2].Mul(x), q[3].Mul(x)}
+// ScalarMul returns k*x.
+func (Quaternion[T, R]) ScalarMul(k T, x [4]T) [4]T {
+	var r R
+	return [4]T{r.Mul(k, x[0]), r.Mul(k, x[1]), r.Mul(k, x[2]), r.Mul(k, x[3])}
 }
 
 // Mul returns the quaternion product qr.
-func (q Quaternion[T]) Mul(r Quaternion[T]) Quaternion[T] {
-	return Quaternion[T]{
-		q[0].Mul(r[0]).Add(q[1].Mul(r[1]).Neg()).Add(q[2].Mul(r[2]).Neg()).Add(q[3].Mul(r[3]).Neg()),
-		q[0].Mul(r[1]).Add(q[1].Mul(r[0])).Add(q[2].Mul(r[3])).Add(q[3].Mul(r[2]).Neg()),
-		q[0].Mul(r[2]).Add(q[1].Mul(r[3]).Neg()).Add(q[2].Mul(r[0])).Add(q[3].Mul(r[1])),
-		q[0].Mul(r[3]).Add(q[1].Mul(r[2])).Add(q[2].Mul(r[1]).Neg()).Add(q[3].Mul(r[0])),
-	}
+func (Quaternion[T, R]) Mul(x, y [4]T) [4]T {
+	var r R
+	var z [4]T
+	z[0] = r.Mul(x[0], y[0])
+	z[0] = r.Add(z[0], r.Neg(r.Mul(x[1], y[1])))
+	z[0] = r.Add(z[0], r.Neg(r.Mul(x[2], y[2])))
+	z[0] = r.Add(z[0], r.Neg(r.Mul(x[3], y[3])))
+	z[1] = r.Mul(x[0], y[1])
+	z[1] = r.Add(z[1], r.Mul(x[1], y[0]))
+	z[1] = r.Add(z[1], r.Mul(x[2], y[3]))
+	z[1] = r.Add(z[1], r.Neg(r.Mul(x[3], y[2])))
+	z[2] = r.Mul(x[0], y[2])
+	z[2] = r.Add(z[2], r.Neg(r.Mul(x[1], y[3])))
+	z[2] = r.Add(z[2], r.Mul(x[2], y[0]))
+	z[2] = r.Add(z[2], r.Mul(x[3], y[1]))
+	z[3] = r.Mul(x[0], y[3])
+	z[3] = r.Add(z[3], r.Mul(x[1], y[2]))
+	z[3] = r.Add(z[3], r.Neg(r.Mul(x[2], y[1])))
+	z[3] = r.Add(z[3], r.Mul(x[3], y[0]))
+	return z
 }
 
+/*
 // Vec3 returns the vector component of q.
 func (q Quaternion[T]) Vec3() Vec3[T] {
 	return Vec3[T]{q[1], q[2], q[3]}
@@ -87,3 +129,4 @@ func (q Quaternion[T]) Vec3() Vec3[T] {
 func (q Quaternion[T]) Rotate(v Vec3[T]) Vec3[T] {
 	return q.Mul(v.Quaternion()).Mul(q.Conjugate()).Vec3()
 }
+*/

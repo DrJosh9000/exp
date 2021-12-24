@@ -17,30 +17,31 @@
 package algebra
 
 // Ring describes a ring (algebraic structure that supports addition, additive
-// inverse, and multiplication).
+// inverse, and multiplication). The ring also has a (multiplicative) identity.
 type Ring[T any] interface {
-	Add(T) T
-	Neg() T
-	Mul(T) T
+	Add(T, T) T
+	Neg(T) T
+    Zero() T
+	Mul(T, T) T
+    Identity() T
 }
 
 // DivisionRing is a Ring that also has multiplicative inverses (which can be
-// expected to panic on the additive identity). This is the same interface
-// required for Field, but has a separate name to remind us that in general
-// b⁻¹a != ab⁻¹.
+// expected to panic on zero). This is the same interface required for Field,
+// but has a separate name to remind us that multiplication is not commutative.
 type DivisionRing[T any] interface {
 	Ring[T]
-	Inv() T
+	Inv(T) T
 }
 
-// Field is a commutative division ring
+// Field is a commutative division ring. The interface is the same.
 type Field[T any] DivisionRing[T]
 
-// Vector describes a vector space (supports addition, scalar multiplication,
-// and dot product).
-type Vector[V, K any] interface {
-	Add(V) V
-	Neg() V
-	ScalarMul(K) V
-	Dot(V) K
+// VectorSpace describes a vector space (supports addition, scalar
+// multiplication, and dot product).
+type VectorSpace[V, K any] interface {
+	Add(V, V) V
+	Neg(V) V
+	ScalarMul(K, V) V
+	Dot(V, V) K
 }

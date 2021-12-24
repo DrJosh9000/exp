@@ -18,43 +18,83 @@ package algebra
 
 import "fmt"
 
-// ℂ is a field.
-var _ Field[Complex[Real]] = Complex[Real]{}
+var (
+	// ℂ is a field.
+	_ Field[[2]float64] = Complex[float64, Real]{}
+	// ℂ is also a 2-dimensional vector space over ℝ.
+	_ VectorSpace[[2]float64, float64] = Complex[float64, Real]{}
+)
 
-// Complex implements complex numbers generically over any division ring.
-type Complex[T DivisionRing[T]] struct {
-	X, Y T
-}
+// GaussianInteger implements the integral domain ℤ[𝕚] using int.
+type GaussianInteger = Complex[int, Integer]
 
-func (z Complex[T]) String() string { 
-	return fmt.Sprint("%v + %v𝕚", z.X, z.Y) 
+// Complex implements complex numbers generically as a 2-dimensional algebra
+// over any ring.
+type Complex[T any, R Ring[T]] struct{}
+
+// Format formats a complex number.
+func (Complex[T, R]) Format(z [2]T) string {
+	return fmt.Sprint("%v + %v𝕚", z[0], z[1])
 }
 
 // Add returns z+w.
-func (z Complex[T]) Add(w Complex[T]) Complex[T] { 
-	return Complex[T]{z.X.Add(w.X), z.Y.Add(w.Y)}
-}
-
-// Neg returns -z.
-func (z Complex[T]) Neg() Complex[T] { 
-	return Complex[T] {z.X.Neg(), z.Y.Neg()}
-}
-
-// Mul returns z*w.
-func (z Complex[T]) Mul(w Complex[T]) Complex[T] { 
-	return Complex[T]{
-		X: z.X.Mul(w.X).Add(z.Y.Mul(w.Y).Neg()), 
-		Y: z.X.Mul(w.Y).Add(z.Y.Mul(w.X)),
+func (Complex[T, R]) Add(z, w [2]T) [2]T {
+	var r R
+	return [2]T{
+		r.Add(z[0], w[0]), 
+		r.Add(z[1], w[1]),
 	}
 }
 
-// Inv returns 1/z.
-func (z Complex[T]) Inv() Complex[T] { 
-	d := z.X.Mul(z.X).Add(z.Y.Mul(z.Y)).Inv()
-	return Complex[T]{z.X.Mul(d), z.Y.Neg().Mul(d)}
+// Neg returns -z.
+func (Complex[T, R]) Neg(z [2]T) [2]T {
+	var r R
+	return [2]T{r.Neg(z[0]), r.Neg(z[1])}
+}
+
+// Zero returns 0 + 0𝕚.
+func (Complex[T, R]) Zero() [2]T {
+	var r R
+	return [2]T{r.Zero(), r.Zero()}
+}
+
+// Mul returns z*w.
+func (Complex[T, R]) Mul(z, w [2]T) [2]T {
+	var r R
+	return [2]T{
+		r.Add(r.Mul(z[0], w[0]), r.Neg(r.Mul(z[1], w[1]))),
+		r.Add(r.Mul(z[0], w[1]), r.Mul(z[1], w[0])),
+	}
+}
+
+// Identity returns 1 + 0𝕚.
+func (Complex[T, R]) Identity() [2]T {
+	var r R
+	return [2]T{r.Identity(), r.Zero()}
+}
+
+// Inv returns 1/z, or panics if R is not a division ring or is zero.
+func (c Complex[T, R]) Inv(z [2]T) [2]T {
+	var r R
+	dr := any(r).(DivisionRing[T])
+	d := dr.Inv(c.Dot(z, z))
+	return c.ScalarMul(d, c.Conjugate(z))
 }
 
 // Conjugate returns the conjugate of z.
-func (z Complex[T]) Conjugate() Complex[T] {
-	return Complex[T]{z.X, z.Y.Neg()}
+func (Complex[T, R]) Conjugate(z [2]T) [2]T {
+	var r R
+	return [2]T{z[0], r.Neg(z[1])}
+}
+
+// Dot returns Re(z)*Re(w) + Im(z)*Im(w).
+func (Complex[T, R]) Dot(z, w [2]T) T {
+	var r R
+	return r.Add(r.Mul(z[0], w[0]), r.Mul(z[1], w[1]))
+}
+
+// ScalarMul returns k*z.
+func (Complex[T, R]) ScalarMul(k T, z [2]T) [2]T {
+	var r R
+	return [2]T{r.Mul(k, z[0]), r.Mul(k, z[1])}
 }
