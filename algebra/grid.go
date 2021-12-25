@@ -28,6 +28,16 @@ func MakeGrid[T any](h, w int) Grid[T] {
 	return g
 }
 
+// Clone makes a copy of the grid.
+func (g Grid[T]) Clone() Grid[T] {
+	ng := MakeGrid[T](g.Size())
+	for j := range g {
+		for i := range g[i] {
+			ng[j][i] = g[j][i]
+		}
+	}
+}
+
 // Size returns the width and height of the Grid. If the height is zero the
 // width will also be zero.
 func (g Grid[T]) Size() (h, w int) {
