@@ -31,7 +31,7 @@ type Quaternion[T any, R Ring[T]] struct{}
 
 // Format formats x into a string.
 func (Quaternion[T, R]) Format(x [4]T) string {
-	return fmt.Sprint("%v + %v𝕚 + %v𝕛 + %v𝕜", x[0], x[1], x[2], x[3])
+	return fmt.Sprintf("%v + %v𝕚 + %v𝕛 + %v𝕜", x[0], x[1], x[2], x[3])
 }
 
 // Add returns x+y.

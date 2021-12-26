@@ -21,7 +21,7 @@ import "fmt"
 const sqrt2 = 1.414213562373095
 
 // QR2 implements numbers in the algebraic number field ℚ(√2) (the rationals
-// adjoined with √2). It can be shown that ℚ(√2) = {(a + b√2)/c : a,b,c ∈ ℤ}.
+// adjoined with √2). ℚ(√2) = {(a + b√2)/c : a,b,c ∈ ℤ}.
 type QR2 struct {}
 
 var (

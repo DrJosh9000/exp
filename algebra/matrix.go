@@ -20,7 +20,7 @@ package algebra
 type Matrix[T any, R Ring[T]] struct{}
 
 // ZeroMatrix returns a zero matrix of size h x w.
-func ZeroMatrix[T any, R Ring[T]](h, w int) Grid[T] {
+func (Matrix[T, R]) ZeroMatrix(h, w int) Grid[T] {
 	var r R
 	m := MakeGrid[T](h, w)
 	for i := range m {
@@ -32,7 +32,7 @@ func ZeroMatrix[T any, R Ring[T]](h, w int) Grid[T] {
 }
 
 // IdentityMatrix returns an identity matrix of size n.
-func IdentityMatrix[T any, R Ring[T]](n int) Grid[T] {
+func (Matrix[T, R]) IdentityMatrix(n int) Grid[T] {
 	var r R
 	m := MakeGrid[T](n, n)
 	for i := range m {
@@ -90,14 +90,14 @@ func (Matrix[T, R]) ScalarMul(k T, m Grid[T]) Grid[T] {
 
 // Mul multiplies two matrices of compatible size (the width of m must equal
 // the height of n)
-func (Matrix[T, R]) Mul(m, n Grid[T]) Grid[T] {
+func (M Matrix[T, R]) Mul(m, n Grid[T]) Grid[T] {
 	mh, mw := m.Size()
 	nh, nw := n.Size()
 	if mw != nh {
 		panic("multiplying matrices of incompatible sizes")
 	}
 	var r R
-	o := ZeroMatrix[T, R](mh, nw)
+	o := M.ZeroMatrix(mh, nw)
 	for i := range o {
 		for j := range o[i] {
 			for k := 0; k < mw; k++ {
@@ -108,11 +108,10 @@ func (Matrix[T, R]) Mul(m, n Grid[T]) Grid[T] {
 	return o
 }
 
-
 /*
 // Inv returns the matrix inverse, or panics if T is not a division ring or
 // the matrix is singular.
-func (m Matrix[T]) Inv() Matrix[T] {
+func (M Matrix[T, R]) Inv(m Grid[T]) Grid[T] {
 	h, w := m.Size()
 	if h == 0 || w == 0 {
 		return m
@@ -120,6 +119,11 @@ func (m Matrix[T]) Inv() Matrix[T] {
 	if h != w {
 		panic("inverting non-square matrix")
 	}
-
+	var r R
+	// The matrix that becomes the inverse starts out as an identity matrix.
+	inv := M.IdentityMatrix(h)
+	// Do Gauss-Jordan elimination on m, applying each row operation
+	// to both m and inv. This turns inv into the inverse of m.
+	// TODO: implement this
 }
 */

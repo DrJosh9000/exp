@@ -22,8 +22,8 @@ type Grid[T any] [][]T
 // MakeGrid makes a Grid of width w and height h.
 func MakeGrid[T any](h, w int) Grid[T] {
 	g := make(Grid[T], h)
-	for j := range g {
-		g[j] = make([]T, w)
+	for i := range g {
+		g[i] = make([]T, w)
 	}
 	return g
 }
@@ -31,11 +31,10 @@ func MakeGrid[T any](h, w int) Grid[T] {
 // Size returns the width and height of the Grid. If the height is zero the
 // width will also be zero.
 func (g Grid[T]) Size() (h, w int) {
-	h = len(g)
-	if h == 0 {
+	if len(g) == 0 {
 		return 0, 0
 	} 
-	return len(g[0]), h
+	return len(g), len(g[0])
 }
 
 // Fill fills the Grid with the value v.
@@ -49,8 +48,8 @@ func (g Grid[T]) Fill(v T) {
 
 // Transpose returns a new Grid reflected about the diagonal.
 func (g Grid[T]) Transpose() Grid[T] {
-	w, h := g.Size()
-	ng := MakeGrid[T](h, w)
+	h, w := g.Size()
+	ng := MakeGrid[T](w, h) // note flipped dimensions
 	for j, row := range g {
 		for i := range row {
 			ng[i][j] = row[i]
@@ -82,13 +81,26 @@ func (g Grid[T]) FlipVertical() Grid[T] {
 	return ng
 }
 
-// Rotate returns a new Grid rotated clockwise by 90 degrees.
-func (g Grid[T]) Rotate() Grid[T] {
-	w, h := g.Size()
-	ng := MakeGrid[T](h, w)
+// RotateClockwise returns a new Grid with entries rotated clockwise by 90 degrees.
+func (g Grid[T]) RotateClockwise() Grid[T] {
+	h, w := g.Size()
+	ng := MakeGrid[T](w, h) // note flipped dimensions
 	for j, row := range g {
 		for i := range row {
-			ng[i][w-j-1] = row[i]
+			ng[i][h-j-1] = row[i]
+		}
+	}
+	return ng
+}
+
+// RotateAnticlockwise returns a new Grid with entries rotated anticlockwise by
+// 90 degrees.
+func (g Grid[T]) RotateAnticlockwise() Grid[T] {
+	h, w := g.Size()
+	ng := MakeGrid[T](w, h) // note flipped dimensions
+	for j, row := range g {
+		for i := range row {
+			ng[i][j] = row[w-i-1]
 		}
 	}
 	return ng

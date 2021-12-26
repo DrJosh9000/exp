@@ -34,7 +34,7 @@ type Complex[T any, R Ring[T]] struct{}
 
 // Format formats a complex number.
 func (Complex[T, R]) Format(z [2]T) string {
-	return fmt.Sprint("%v + %v𝕚", z[0], z[1])
+	return fmt.Sprintf("%v + %v𝕚", z[0], z[1])
 }
 
 // Add returns z+w.

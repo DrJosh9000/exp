@@ -74,7 +74,7 @@ func TestFlipVertical(t *testing.T) {
 	}
 }
 
-func TestRotate(t *testing.T) {
+func TestRotateClockwise(t *testing.T) {
 	g := Grid[int]{
 		[]int{0, 1, 2, 3},
 		[]int{3, 4, 5, 6},
@@ -86,8 +86,26 @@ func TestRotate(t *testing.T) {
 		[]int{8, 5, 2},
 		[]int{9, 6, 3},
 	}
-	got := g.Rotate()
+	got := g.RotateClockwise()
 	if diff := cmp.Diff(got, want); diff != "" {
-		t.Errorf("g.Rotate diff:\n%s", diff)
+		t.Errorf("g.RotateClockwise diff:\n%s", diff)
+	}
+}
+
+func TestRotateAnticlockwise(t *testing.T) {
+	g := Grid[int]{
+		[]int{0, 1, 2, 3},
+		[]int{3, 4, 5, 6},
+		[]int{6, 7, 8, 9},
+	}
+	want := Grid[int]{
+		[]int{3, 6, 9},
+		[]int{2, 5, 8},
+		[]int{1, 4, 7},
+		[]int{0, 3, 6},
+	}
+	got := g.RotateAnticlockwise()
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("g.RotateAnticlockwise diff:\n%s", diff)
 	}
 }
