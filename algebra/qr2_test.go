@@ -35,9 +35,56 @@ func TestQR2Canon(t *testing.T) {
 		{in: [3]int{2, 2, -2}, want: [3]int{-1, -1, 1}},
 	}
 
+	var r QR2
 	for _, test := range tests {
-		if got, want := (QR2{}).Canon(test.in), test.want; got != want {
-			t.Errorf("QR2{}.Canon(%v) = %v, want %v", test.in, got, want)
+		if got, want := r.Canon(test.in), test.want; got != want {
+			t.Errorf("QR2{}.Canon(%v) = %v, want %v", r.Format(test.in), r.Format(got), r.Format(want))
+		}
+	}
+}
+
+func TestQR2Add(t *testing.T) {
+	tests := []struct {
+		x, y, want [3]int
+	}{
+		{x: [3]int{0, 0, 1}, y: [3]int{0, 0, 1}, want: [3]int{0, 0, 1}},
+		{x: [3]int{0, 0, 1}, y: [3]int{1, 0, 1}, want: [3]int{1, 0, 1}},
+		{x: [3]int{1, 0, 1}, y: [3]int{0, 1, 1}, want: [3]int{1, 1, 1}},
+		{x: [3]int{0, 1, 1}, y: [3]int{0, -1, 1}, want: [3]int{0, 0, 1}},
+		{x: [3]int{1, 1, 1}, y: [3]int{1, 1, 1}, want: [3]int{2, 2, 1}},
+		{x: [3]int{1, 0, 2}, y: [3]int{1, 0, 2}, want: [3]int{1, 0, 1}},
+		{x: [3]int{1, 0, 2}, y: [3]int{0, 1, 2}, want: [3]int{1, 1, 2}},
+		{x: [3]int{3, 0, 1}, y: [3]int{0, 7, 1}, want: [3]int{3, 7, 1}},
+		{x: [3]int{3, 7, 2}, y: [3]int{5, 2, 3}, want: [3]int{19, 25, 6}},
+	}
+
+	var r QR2
+	for _, test := range tests {
+		if got, want := r.Add(test.x, test.y), test.want; got != want {
+			t.Errorf("QR2{}.Add(%v, %v) = %v, want %v", r.Format(test.x), r.Format(test.y), r.Format(got), r.Format(want))
+		}
+	}
+}
+func TestQR2Mul(t *testing.T) {
+	tests := []struct {
+		x, y, want [3]int
+	}{
+		{x: [3]int{0, 0, 1}, y: [3]int{0, 0, 1}, want: [3]int{0, 0, 1}},
+		{x: [3]int{0, 0, 1}, y: [3]int{1, 0, 1}, want: [3]int{0, 0, 1}},
+		{x: [3]int{1, 0, 1}, y: [3]int{0, 1, 1}, want: [3]int{0, 1, 1}},
+		{x: [3]int{0, 1, 1}, y: [3]int{0, -1, 1}, want: [3]int{-2, 0, 1}},
+		{x: [3]int{1, 1, 1}, y: [3]int{1, 1, 1}, want: [3]int{3, 2, 1}},
+		{x: [3]int{1, 0, 2}, y: [3]int{1, 0, 2}, want: [3]int{1, 0, 4}},
+		{x: [3]int{1, 0, 2}, y: [3]int{0, 1, 2}, want: [3]int{0, 1, 4}},
+		{x: [3]int{0, 1, 2}, y: [3]int{0, 1, 2}, want: [3]int{1, 0, 2}},
+		{x: [3]int{3, 0, 1}, y: [3]int{0, 7, 1}, want: [3]int{0, 21, 1}},
+		{x: [3]int{3, 7, 2}, y: [3]int{5, 2, 3}, want: [3]int{43, 41, 6}},
+	}
+
+	var r QR2
+	for _, test := range tests {
+		if got, want := r.Mul(test.x, test.y), test.want; got != want {
+			t.Errorf("QR2{}.Mul(%v, %v) = %v, want %v", r.Format(test.x), r.Format(test.y), r.Format(got), r.Format(want))
 		}
 	}
 }
