@@ -43,10 +43,13 @@ func (QR2) Format(x [3]int) string {
 // Canon returns x in a canonical form (reduced fraction with
 // positive denominator).
 func (QR2) Canon(x [3]int) [3]int {
+	if x == [3]int{} {
+		return [3]int{0, 0, 1}
+	}
 	if x[2] < 0 {
 		x[0], x[1], x[2] = -x[0], -x[1], -x[2]
 	}
-	d := GCD(x[0], GCD(x[1], x[2]))
+	d := GCD(Abs(x[0]), GCD(Abs(x[1]), Abs(x[2])))
 	x[0] /= d
 	x[1] /= d
 	x[2] /= d
