@@ -133,6 +133,16 @@ func DigitGrid(digits []string) Grid[int] {
 	return g
 }
 
+// ByteGrid converts a grid of strings into a Grid[byte].
+func ByteGrid(s []string) Grid[byte] {
+	g := make(Grid[byte], len(s))
+	for j, row := range s {
+		g[j] = []byte(row)
+	}
+	return g
+}
+
+
 // RuneGrid converts a grid of characters into a Grid[rune].
 func RuneGrid(runes []string) Grid[rune] {
 	h := len(runes)
