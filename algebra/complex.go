@@ -19,10 +19,19 @@ package algebra
 import "fmt"
 
 var (
-	// ℂ is a field.
+	// ℂ (as Complex[float64, Real]) is a field.
 	_ Field[[2]float64] = Complex[float64, Real]{}
 	// ℂ is also a 2-dimensional vector space over ℝ.
 	_ VectorSpace[[2]float64, float64] = Complex[float64, Real]{}
+
+	// ℤ[𝕚] is a ring.
+	_ Ring[[2]int] = GaussianInteger{}
+	// ℤ[𝕚] is also a 2-dimensional vector space over ℤ.
+	_ VectorSpace[[2]int, int] = GaussianInteger{}
+
+	// Nothing stopping me making triply-nested complexes.
+	// I'm mad with power!
+	_ Field[[2][2]complex128] = Complex[[2]complex128, Complex[complex128, Cmplx]]{}
 )
 
 // GaussianInteger implements the integral domain ℤ[𝕚] using int.

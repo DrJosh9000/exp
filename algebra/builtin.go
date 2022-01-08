@@ -18,12 +18,12 @@ type Real = BuiltinField[float64]
 // Cmplx implements ℂ using complex128 (not with the Complex type).
 type Cmplx = BuiltinField[complex128]
 
-// Fieldable supports built-in arithmetic that can support a field.
+// Fieldable matches types with built-in arithmetic that can support a field.
 type Fieldable interface {
 	~float32 | ~float64 | ~complex64 | ~complex128
 }
 
-// Ringable supports built-in arithmetic that can support a ring.
+// Ringable matches types with built-in arithmetic that can support a ring.
 type Ringable interface {
 	~int | ~int8 | ~int16 | ~int32 | ~int64 | Fieldable
 }

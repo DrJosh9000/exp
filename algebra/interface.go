@@ -16,8 +16,8 @@
 
 package algebra
 
-// Ring describes a ring (algebraic structure that supports addition, additive
-// inverse, and multiplication). The ring also has a (multiplicative) identity.
+// Ring describes an algebraic structure with addition, negation, and
+// multiplication. Rings also have a zero element and an identity element.
 type Ring[T any] interface {
 	Add(T, T) T
 	Neg(T) T
@@ -29,6 +29,7 @@ type Ring[T any] interface {
 // DivisionRing is a Ring that also has multiplicative inverses (which can be
 // expected to panic on zero). This is the same interface required for Field,
 // but has a separate name to remind us that multiplication is not commutative.
+// TODO: continue bothering with this distinction?
 type DivisionRing[T any] interface {
 	Ring[T]
 	Inv(T) T
