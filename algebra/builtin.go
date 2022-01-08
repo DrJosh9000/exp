@@ -23,7 +23,7 @@ type Fieldable interface {
 	~float32 | ~float64 | ~complex64 | ~complex128
 }
 
-// Fieldable supports built-in arithmetic that can support a ring.
+// Ringable supports built-in arithmetic that can support a ring.
 type Ringable interface {
 	~int | ~int8 | ~int16 | ~int32 | ~int64 | Fieldable
 }
@@ -47,7 +47,7 @@ func (BuiltinRing[T]) Mul(x, y T) T { return x * y }
 func (BuiltinRing[T]) Identity() T { return 1 }
 
 // BuiltinField implements a field over T using built-in arithmetic.
-type BuiltinField[T Fieldable] BuiltinRing[T]
+type BuiltinField[T Fieldable] struct{}
 
 // Add returns x+y.
 func (BuiltinField[T]) Add(x, y T) T { return x + y }
