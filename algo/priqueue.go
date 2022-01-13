@@ -40,7 +40,8 @@ func (pq *PriQueue[T, D]) Pop() (T, D) {
 // Len returns the size of the queue.
 func (pq *PriQueue[T, D]) Len() int { return len(*pq) }
 
-// Orderable types are the built-in types that support the < operator.
+// Orderable types are the built-in comparable types that support the < and + 
+// operators.
 type Orderable interface {
 	~int | ~int8 | ~int16 | ~int32 | ~int64 | 
 	~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr |

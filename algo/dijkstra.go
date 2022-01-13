@@ -46,7 +46,7 @@ func Dijkstra[T comparable, D Orderable](start T, visit func(T, D) ([]WeightedIt
 				continue
 			}
 			newdist := dist[node] + wi.Weight
-			if olddist, seen := dist[wi.Item]; seen && olddist >= newdist {
+			if olddist, seen := dist[wi.Item]; seen && olddist <= newdist {
 				continue
 			}
 			dist[wi.Item] = newdist
