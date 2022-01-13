@@ -18,19 +18,21 @@
 package algo
 
 // Dijkstra is an implementation of Dijkstra's algorithm for single-source 
-// shortest paths on a directed, non-negatively weighted graph. The algorithm
-// starts with a given node and assumes the zero value for D is the starting
-// distance for that node. It then calls visit, passing each node and the length
-// of the shortest path to that node. visit should either return a new
-// collection of items and weights (the neighbours of the node it
-// was given, and the weight of the edge connecting it) or an error. If visit
-// returns a non-nil error, the algorithm halts and passes the error back to the
-// caller. visit does not need to track already-visited nodes - it can return
-// all known neighbours of a node.
-// TODO: a means of returning a shortest path?
-func Dijkstra[T comparable, D Orderable](start T, visit func(T, D) ([]WeightedItem[T, D], error)) error {
-	var zero D
+// shortest paths on a directed, non-negatively weighted graph. It returns a map
+// of each node to the previous node in the shortest path to that node. This
+// predecessor map is only complete for visited nodes.
+// The algorithm starts with a given start node and assumes the zero value for D
+// is the starting distance for that node. It then repeatedly calls visit,
+// passing each node and the length of the shortest path to that node. visit
+// should either return a new collection of items and weights (the neighbours of
+// the node it was given, and the weight of the edge connecting it) or an error.
+// If visit returns a non-nil error, the algorithm halts and passes the error
+// back to the caller. visit does not need to track already-visited nodes - it
+// can return all known neighbours of a node. 
+func Dijkstra[T comparable, D Orderable](start T, visit func(T, D) ([]WeightedItem[T, D], error)) (map[T]T, error) {
+	prev := make(map[T]T)
 	done := make(map[T]bool)
+	var zero D
 	dist := map[T]D{start: zero}
 	pq := new(PriQueue[T, D])
 	pq.Push(start, zero)
@@ -39,7 +41,7 @@ func Dijkstra[T comparable, D Orderable](start T, visit func(T, D) ([]WeightedIt
 		done[node] = true
 		next, err := visit(node, dist[node])
 		if err != nil {
-			return err
+			return prev, err
 		}
 		for _, wi := range next {
 			if done[wi.Item] {
@@ -50,8 +52,9 @@ func Dijkstra[T comparable, D Orderable](start T, visit func(T, D) ([]WeightedIt
 				continue
 			}
 			dist[wi.Item] = newdist
+			prev[wi.Item] = node
 			pq.Push(wi.Item, newdist)
 		}
 	}
-	return nil
+	return prev, nil
 }
