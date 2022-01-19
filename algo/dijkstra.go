@@ -38,6 +38,9 @@ func Dijkstra[T comparable, D Orderable](start T, visit func(T, D) ([]WeightedIt
 	pq.Push(start, zero)
 	for pq.Len() > 0 {
 		node, _ := pq.Pop()
+		if done[node] {
+			continue
+		}
 		done[node] = true
 		next, err := visit(node, dist[node])
 		if err != nil {
