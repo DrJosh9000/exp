@@ -1,4 +1,4 @@
-package exp
+package exp // import "github.com/DrJosh9000/exp"
 
 import (
 	"bufio"
