@@ -20,8 +20,8 @@ package algo
 // unweighted directed graph. It follows the same conventions as the Dijkstra
 // function. It assumes the weight of each edge is always 1, tallying distances
 // as ints. This flood-fill is generic and makes minimal assumptions about each
-// node - a more specific implementation is often faster (e.g. if it is
-// flood-filling a 2D grid).
+// node. A more specific implementation than this one is more appropriate in
+// some cases, e.g. flood-filling a 2D grid.
 func FloodFill[T comparable](start T, visit func(T, int) ([]T, error)) (map[T]T, error) {
 	prev := make(map[T]T)
 	dist := map[T]int{start: 0}

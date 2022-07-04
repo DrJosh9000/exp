@@ -62,7 +62,7 @@ func (h *minHeap[T, D]) Pop() interface{} {
 	return i
 }
 
-// WeightedItem is an item together with a weight value
+// WeightedItem is an item together with a weight value.
 type WeightedItem[T any, D Orderable] struct{
 	Item T
 	Weight D
