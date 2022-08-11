@@ -32,7 +32,7 @@ package algo
 // care of tracking nodes that have already been visited - since visit does not
 // need to track already-visited nodes, it can safely return all known neighbours
 // of a node. 
-func Dijkstra[T comparable, D Orderable](start T, visit func(T, D) ([]WeightedItem[T, D], error)) (map[T]T, error) {
+func Dijkstra[T comparable, D Orderable](start T, visit func(T, D) (map[T]D, error)) (map[T]T, error) {
 	prev := make(map[T]T)
 	done := make(map[T]bool)
 	var zero D
@@ -49,17 +49,17 @@ func Dijkstra[T comparable, D Orderable](start T, visit func(T, D) ([]WeightedIt
 		if err != nil {
 			return prev, err
 		}
-		for _, wi := range next {
-			if done[wi.Item] {
+		for item, weight := range next {
+			if done[item] {
 				continue
 			}
-			newdist := dist[node] + wi.Weight
-			if olddist, seen := dist[wi.Item]; seen && olddist <= newdist {
+			newdist := dist[node] + weight
+			if olddist, seen := dist[item]; seen && olddist <= newdist {
 				continue
 			}
-			dist[wi.Item] = newdist
-			prev[wi.Item] = node
-			pq.Push(wi.Item, newdist)
+			dist[item] = newdist
+			prev[item] = node
+			pq.Push(item, newdist)
 		}
 	}
 	return prev, nil
