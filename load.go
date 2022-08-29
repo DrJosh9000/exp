@@ -26,6 +26,18 @@ import (
 	"strconv"
 )
 
+// MustReadFile reads an entire file and returns the contents as a []byte.
+// If an error is encountered, it calls log.Fatal.
+// This is a helper intended for very simple programs (e.g. Advent of Code)
+// and is not recommended for production code.
+func MustReadFile(path string) []byte {
+	b, err := os.ReadFile(path)
+	if err != nil {
+		log.Fatalf("MustReadFile: %v", err)
+	}
+	return b
+}
+
 // MustForEachLineIn calls cb with each line in the file.
 // It uses a bufio.Scanner internally, which can fail on longer lines.
 // If an error is encountered, it calls log.Fatal.
