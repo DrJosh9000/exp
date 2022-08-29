@@ -25,6 +25,20 @@ func Map[S, T any](in []S, f func(S) T) []T {
 	return out
 }
 
+// MapOrErr calls f with each element of in, to build the output slice.
+// It stops and returns the first error returned by f.
+func MapOrErr[S, T any](in []S, f func(S) (T, error)) ([]T, error) {
+	out := make([]T, len(in))
+	for i, x := range in {
+		y, err := f(x)
+		if err != nil {
+			return nil, err
+		}
+		out[i] = y
+	}
+	return out, nil
+}
+
 // MapMin finds the smallest value in the map m and returns the corresponding key and
 // the value itself. If len(m) == 0, the zero values for K and V are returned. If
 // there is a tie, the first key encountered is returned (which could be random).
