@@ -16,6 +16,15 @@
 
 package algo
 
+// Map calls f with each element of in, to build the output slice.
+func Map[S, T any](in []S, f func(S) T) []T {
+	out := make([]T, len(in))
+	for i, x := range in {
+		out[i] = f(x)
+	}
+	return out
+}
+
 // MapMin finds the smallest value in the map m and returns the corresponding key and
 // the value itself. If len(m) == 0, the zero values for K and V are returned. If
 // there is a tie, the first key encountered is returned (which could be random).

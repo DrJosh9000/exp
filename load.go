@@ -14,19 +14,23 @@
    limitations under the License.
 */
 
+// Package exp contains some code that should be considered experimental and
+// comes with absolutely no guarantees whatsoever (particularly around 
+// compatibility, consistency, or functionality).
 package exp // import "github.com/DrJosh9000/exp"
 
 import (
 	"bufio"
 	"log"
 	"os"
+	"strconv"
 )
 
 // MustForEachLineIn calls cb with each line in the file.
 // It uses a bufio.Scanner internally, which can fail on longer lines.
 // If an error is encountered, it calls log.Fatal.
 // This is a helper intended for very simple programs (e.g. Advent of Code)
-// and is not recommended for production apps.
+// and is not recommended for production code.
 func MustForEachLineIn(path string, cb func(line string)) {
 	f, err := os.Open(path)
 	if err != nil {
@@ -41,3 +45,16 @@ func MustForEachLineIn(path string, cb func(line string)) {
 		log.Fatalf("MustForEachLineIn: scanner: %v", err)
 	}
 }
+
+// MustAtoi calls strconv.Atoi on the string and returns the result.
+// If strconv.Atoi returns an error, it calls log.Fatal.
+// This is a helper intended for very simple programs (e.g. Advent of Code)
+// and is not recommended for production code.
+func MustAtoi(s string) int {
+	n, err := strconv.Atoi(s)
+	if err != nil {
+		log.Fatalf("MustAtoi: %v", err)
+	}
+	return n
+}
+
