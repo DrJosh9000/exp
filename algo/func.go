@@ -39,6 +39,23 @@ func MapOrErr[S, T any](in []S, f func(S) (T, error)) ([]T, error) {
 	return out, nil
 }
 
+// Reduce implements a functional "reduce" operation over slices.
+// Loosely: Reduce(in, f) = f(f(f(...f(in[0], in[1]), in[2]),...), in[len(in)-1]).
+// For example, if in is []int, Reduce(in, func(x, y int) int { return x + y }) 
+// computes the sum.
+// If len(in) == 0, the zero value for T is returned.
+func Reduce[T any](in []T, f func(T, T) T) T {
+	var accum T
+	if len(in) == 0 {
+		return accum
+	}
+	accum = in[0]
+	for _, t := range in[1:] {
+		accum = f(accum, t)
+	}
+	return accum
+}
+
 // MapMin finds the smallest value in the map m and returns the corresponding key and
 // the value itself. If len(m) == 0, the zero values for K and V are returned. If
 // there is a tie, the first key encountered is returned (which could be random).
