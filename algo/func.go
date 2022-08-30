@@ -16,6 +16,9 @@
 
 package algo
 
+// This file implements some functions that are unnecessary in readable Go.
+// (Just write the loop!)
+
 // Map calls f with each element of in, to build the output slice.
 func Map[S, T any](in []S, f func(S) T) []T {
 	out := make([]T, len(in))
@@ -39,19 +42,32 @@ func MapOrErr[S, T any](in []S, f func(S) (T, error)) ([]T, error) {
 	return out, nil
 }
 
-// Reduce implements a functional "reduce" operation over slices.
-// Loosely: Reduce(in, f) = f(f(f(...f(in[0], in[1]), in[2]),...), in[len(in)-1]).
+// Foldl implements a functional "reduce" operation over slices.
+// Loosely: Foldl(in, f) = f(f(f(...f(in[0], in[1]), in[2]),...), in[len(in)-1]).
 // For example, if in is []int, Reduce(in, func(x, y int) int { return x + y }) 
 // computes the sum.
 // If len(in) == 0, the zero value for T is returned.
-func Reduce[T any](in []T, f func(T, T) T) T {
+func Foldl[T any](in []T, f func(T, T) T) T {
 	var accum T
 	if len(in) == 0 {
 		return accum
 	}
 	accum = in[0]
-	for _, t := range in[1:] {
-		accum = f(accum, t)
+	for _, x := range in[1:] {
+		accum = f(accum, x)
+	}
+	return accum
+}
+
+// Foldr is the same as Foldl, but considers elements in the reverse.
+func Foldr[T any](in []T, f func(T, T) T) T {
+	var accum T
+	if len(in) == 0 {
+		return accum
+	}
+	accum = in[len(in)-1]
+	for i := range in[1:] {
+		accum = f(accum, in[len(in)-i-1])
 	}
 	return accum
 }
