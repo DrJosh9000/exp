@@ -20,7 +20,7 @@ import "testing"
 
 func TestPowInt(t *testing.T) {
 	want := 23
-	for i := 1; i < 13; i++ {
+	for i := uint(1); i < 13; i++ {
 		if got := Pow(23, i, func(x, y int) int { return x * y }); got != want {
 			t.Errorf("Pow(23, %d, *) = %d, want %d", i, got, want)
 		}

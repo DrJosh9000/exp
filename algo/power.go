@@ -18,8 +18,8 @@ package algo
 
 // Pow raises base to the power pow, where multiplication is given by op.
 // The only requirements are that:
-// * op must be 3-power associative over T (i.e. for all x in T, 
-//   `op(op(x,x),x) == op(x,op(x,x))`), and
+// * op must be 3-power associative for base (i.e. 
+//   `op(op(base,base),base) == op(base,op(base,base))`), and
 // * pow must be strictly positive (pow >= 1).
 // op is called O(log(pow) + bits.OnesCount(pow)) times.
 //
@@ -31,7 +31,7 @@ package algo
 // For Pow to be able to handle a pow == 0 in full generality would require
 // an additional parameter or more convention-setting. But you can easily
 // test for pow == 0 yourself before calling.
-func Pow[T any](base T, pow int, op func(T, T) T) T {
+func Pow[T any](base T, pow uint, op func(T, T) T) T {
 	if pow < 1 {
 		panic("pow must be at least 1")
 	}
