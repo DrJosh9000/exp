@@ -54,7 +54,7 @@ func MapOrErr[S, T any](in []S, f func(S) (T, error)) ([]T, error) {
 
 // Foldl implements a functional "reduce" operation over slices.
 // Loosely: Foldl(in, f) = f(f(f(...f(in[0], in[1]), in[2]),...), in[len(in)-1]).
-// For example, if in is []int, Reduce(in, func(x, y int) int { return x + y }) 
+// For example, if in is []int, Foldl(in, func(x, y int) int { return x + y }) 
 // computes the sum.
 // If len(in) == 0, the zero value for T is returned.
 func Foldl[T any](in []T, f func(T, T) T) T {
