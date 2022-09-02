@@ -19,6 +19,16 @@ package algo
 // This file implements some functions that are unnecessary in readable Go.
 // (Just write the loop!)
 
+// Keys returns a slice with all the keys from a map, in whatever order
+// they are iterated (i.e. random order).
+func Keys[K comparable, V any](m map[K]V) []K {
+	ks := make([]K, 0, len(m))
+	for k := range m {
+		ks = append(ks, k)
+	}
+	return ks
+}
+
 // Map calls f with each element of in, to build the output slice.
 func Map[S, T any](in []S, f func(S) T) []T {
 	out := make([]T, len(in))
