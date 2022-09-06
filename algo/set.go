@@ -65,7 +65,7 @@ func (s Set[T]) Add(t Set[T]) Set[T] {
 		s = make(Set[T], len(t))
 	}
 	for x := range t {
-		s = s.Insert(x)
+		s[x] = struct{}{}
 	}
 	return s
 }
@@ -81,9 +81,9 @@ func (s Set[T]) Subtract(t Set[T]) Set[T] {
 	return s
 }
 
-// Copy returns a copy of the set. It is equivalent to Set[T].Add(nil, s).
+// Copy returns a copy of the set.
 func (s Set[T]) Copy() Set[T] {
-	return Set[T].Add(nil, s)
+	return make(Set[T], len(s)).Add(s)
 }
 
 // Union returns a new set containing elements from both sets.
