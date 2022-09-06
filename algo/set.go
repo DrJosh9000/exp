@@ -81,6 +81,20 @@ func (s Set[T]) Subtract(t Set[T]) Set[T] {
 	return s
 }
 
+// Keep removes all elements *not* in t from s, and returns s.
+// (s = s.Intersection(t), but Keep modifies s in-place.)
+func (s Set[T]) Keep(t Set[T]) Set[T] {
+	if s == nil {
+		return s
+	}
+	for x := range s {
+		if !t.Contains(x) {
+			delete(s, x)
+		}
+	}
+	return s
+}
+
 // Copy returns a copy of the set.
 func (s Set[T]) Copy() Set[T] {
 	return make(Set[T], len(s)).Add(s)
