@@ -20,6 +20,14 @@ package algo
 // There's a million of these now; what harm is another?
 type Set[T comparable] map[T]struct{}
 
+// MakeSet combines making a set, and inserting one or more items, into a single
+// convenient function.
+func MakeSet[T comparable](items ...T) Set[T] {
+	s := make(Set[T], len(items))
+	s.Insert(items...)
+	return s
+}
+
 // SetFromSlice creates a set from a slice.
 func SetFromSlice[T comparable](sl []T) Set[T] {
 	s := make(Set[T], len(sl))
