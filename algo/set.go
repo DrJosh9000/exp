@@ -18,24 +18,16 @@ package algo
 
 // Set is a generic set type based on map. 
 // There's a million of these now; what harm is another?
+//
+// Set aims to work in a slice-like fashion with nil-valued sets, i.e.:
+//   var s Set[int]
+//   s = s.Insert(420, 69)   // s now contains 420 and 69
+// However, Insert (and Add) do not make new sets if the set is non-nil, e.g.:
+//   s := make(Set[int])
+//   s.Insert(420, 69)   // as above
 type Set[T comparable] map[T]struct{}
 
-// MakeSet combines making a set, and inserting one or more items, into a single
-// convenient function.
-func MakeSet[T comparable](items ...T) Set[T] {
-	s := make(Set[T], len(items))
-	s.Insert(items...)
-	return s
-}
-
-// SetFromSlice creates a set from a slice.
-func SetFromSlice[T comparable](sl []T) Set[T] {
-	s := make(Set[T], len(sl))
-	s.Insert(sl...)
-	return s
-}
-
-// ToSlice returns a new slice with all the elements of the set.
+// ToSlice returns a new slice with all the elements of the set in random order.
 func (s Set[T]) ToSlice() []T {
 	sl := make([]T, 0, len(s))
 	for x := range s {
@@ -44,14 +36,21 @@ func (s Set[T]) ToSlice() []T {
 	return sl
 }
 
-// Insert inserts x into the set.
-func (s Set[T]) Insert(x ...T) {
+// Insert inserts x into the set. If s == nil, Insert returns a new set
+// containing x. This allows patterns like `m[k] = m[k].Insert(x)` (for a map m
+// with set values).
+func (s Set[T]) Insert(x ...T) Set[T] {
+	if s == nil {
+		s = make(Set[T])
+	}
 	for _, x := range x {
 		s[x] = struct{}{}
 	}
+	return s
 }
 
-// make(Set[T]), delete(s, x), and len(s) are so simple that I'm not making methods.
+// make(Set[T]), delete(s, x), and len(s) are so simple that I'm not making
+// methods.
 
 // Contains reports whether s contains x.
 func (s Set[T]) Contains(x T) bool {
@@ -59,25 +58,32 @@ func (s Set[T]) Contains(x T) bool {
 	return c
 }
 
-// Add adds the elements from t into s.
-func (s Set[T]) Add(t Set[T]) {
-	for x := range t {
-		s.Insert(x)
+// Add adds the elements from t into s, and returns s. If s == nil, Add 
+// returns a new set which is a copy of t.
+func (s Set[T]) Add(t Set[T]) Set[T] {
+	if s == nil {
+		s = make(Set[T], len(t))
 	}
+	for x := range t {
+		s = s.Insert(x)
+	}
+	return s
 }
 
-// Subtract removes all elements in t from s.
-func (s Set[T]) Subtract(t Set[T]) {
+// Subtract removes all elements in t from s, and returns s.
+func (s Set[T]) Subtract(t Set[T]) Set[T] {
+	if s == nil {
+		return s
+	}
 	for x := range t {
 		delete(s, x)
 	}
+	return s
 }
 
-// Copy returns a copy of the set.
+// Copy returns a copy of the set. It is equivalent to Set[T].Add(nil, s).
 func (s Set[T]) Copy() Set[T] {
-	t := make(Set[T], len(s))
-	t.Add(s)
-	return t
+	return Set[T].Add(nil, s)
 }
 
 // Union returns a new set containing elements from both sets.
@@ -101,13 +107,11 @@ func (s Set[T]) Intersection(t Set[T]) Set[T] {
 
 // Difference returns a new set with elements from s that are not in t.
 func (s Set[T]) Difference(t Set[T]) Set[T] {
-	u := s.Copy()
-	u.Subtract(t)
-	return u
+	return s.Copy().Subtract(t)
 }
 
-// SymmetricDifference returns a new set with elements that are either in 
-// s or in t but not both.
+// SymmetricDifference returns a new set with elements that are either in s, or
+// in t, but not in both.
 func (s Set[T]) SymmetricDifference(t Set[T]) Set[T] {
 	u := make(Set[T])
 	for x := range s {
