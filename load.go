@@ -23,17 +23,26 @@ import (
 	"bufio"
 	"log"
 	"os"
+	"path/filepath"
+	"runtime"
+	"strings"
 )
 
 // Must returns t if err is nil. If err is not nil, it calls log.Fatal.
 // In other words, Must is a "do-or-die" wrapper for function calls that can
-// return an error.
+// return a value and an error.
 // This is a helper intended for very simple programs (e.g. Advent of Code)
 // and is not recommended for production code (handle your errors yourself!)
 // particularly because the logged message will be unhelpful.
+// As a compromise for its unhelpfulness, the logged message includes the file
+// and line number of the call to Must.
 func Must[T any](t T, err error) T {
 	if err != nil {
-		log.Fatalf("Must: %v", err)
+		_, file, line, ok := runtime.Caller(1)
+		if !ok {
+			file, line = "unknown.go", 0
+		}
+		log.Fatalf("%s:%d: Must: %v", filepath.Base(file), line, err)
 	}
 	return t
 }
@@ -62,7 +71,7 @@ func MustFunc[S, T any](f func(s S) (T, error)) func(S) T {
 func MustForEachLineIn(path string, cb func(line string)) {
 	f, err := os.Open(path)
 	if err != nil {
-		log.Fatalf("MustForEachLineIn opening file: %v", err)
+		log.Fatalf("MustForEachLineIn: opening file: %v", err)
 	}
 	defer f.Close()
 	sc := bufio.NewScanner(f)
@@ -74,3 +83,15 @@ func MustForEachLineIn(path string, cb func(line string)) {
 	}
 }
 
+// MustReadLines reads the entire file into memory and returns a slice
+// containing each line of text (essentially, strings.Split(contents, "\n")).
+// This is a helper intended for very simple programs (e.g. Advent of Code)
+// and is not recommended for production code, particularly because the
+// logged message may be somewhat unhelpful.
+func MustReadLines(path string) []string {
+	b, err := os.ReadFile(path)
+	if err != nil {
+		log.Fatalf("MustReadLines: opening file: %v", err)
+	}
+	return strings.Split(string(b), "\n")
+}

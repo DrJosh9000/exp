@@ -52,10 +52,30 @@ func MapOrErr[S, T any](in []S, f func(S) (T, error)) ([]T, error) {
 	return out, nil
 }
 
+// Sum sums any slice where the elements support the + operator. 
+// If len(in) == 0, the zero value for T is returned.
+func Sum[T Addable](in []T) T {
+	var accum T
+	for _, x := range in {
+		accum += x
+	}
+	return accum
+}
+
+// Prod computes the product of elements in any slice where the element type
+// is numeric. If len(in) == 0, 1 is returned.
+func Prod[T Numeric](in []T) T {
+	var accum T = 1
+	for _, x := range in {
+		accum *= x
+	}
+	return accum
+}
+
 // Foldl implements a functional "reduce" operation over slices.
 // Loosely: Foldl(in, f) = f(f(f(...f(in[0], in[1]), in[2]),...), in[len(in)-1]).
 // For example, if in is []int, Foldl(in, func(x, y int) int { return x + y }) 
-// computes the sum.
+// computes the sum. (The Sum function achieves the same thing in less code.)
 // If len(in) == 0, the zero value for T is returned.
 func Foldl[T any](in []T, f func(T, T) T) T {
 	var accum T
