@@ -25,6 +25,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 )
 
@@ -86,6 +87,7 @@ func MustForEachLineIn(path string, cb func(line string)) {
 // MustReadLines reads the entire file into memory and returns a slice
 // containing each line of text (essentially, strings.Split(contents, "\n"), but
 // ignoring the final element if it is empty).
+// If an error is encountered, it calls log.Fatal.
 // This is a helper intended for very simple programs (e.g. Advent of Code)
 // and is not recommended for production code, particularly because the
 // logged message may be somewhat unhelpful.
@@ -99,4 +101,31 @@ func MustReadLines(path string) []string {
 		return lines[:n1]
 	}
 	return lines
+}
+
+// MustReadInts reads the entire file into memory, splits the contents by the
+// delimiter, parses each component as a decimal integer, and returns them as a
+// slice.
+// If an error is encountered, it calls log.Fatal.
+// This is a helper intended for very simple programs (e.g. Advent of Code)
+// and is not recommended for production code, particularly because the
+// logged message may be somewhat unhelpful.
+func MustReadInts(path, delim string) []int {
+	b, err := os.ReadFile(path)
+	if err != nil {
+		log.Fatalf("MustReadInts: opening file: %v", err)
+	}
+	parts := strings.Split(string(b), delim)
+	if n1 := len(parts)-1; parts[n1] == "" {
+		parts = parts[:n1]
+	}
+	out := make([]int, len(parts))
+	for i, s := range parts {
+		n, err := strconv.Atoi(s)
+		if err != nil {
+			log.Fatalf("MustReadInts: parsing part %d %q: %v", i, s, err)
+		}
+		out[i] = n
+	}
+	return out
 }
