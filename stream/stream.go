@@ -126,3 +126,33 @@ func Transform[S, T any](ctx context.Context, in <-chan S, out chan<- T, tf func
 		}
 	}
 }
+
+// Filter receives values from in, and passes them to f. If f reports true, the 
+// value is sent on out. After receiving all values from in, and in is closed,
+// out is closed and Filter returns.
+func Filter[T any](ctx context.Context, in <-chan S, out chan<- T, f func(context.Context, T) (bool, error)) error {
+	for {
+		select {
+		case s, open := <-in:
+			if !open {
+				close(out)
+				return nil
+			}
+			keep, err := f(ctx, s)
+			if err != nil {
+				return err
+			}
+			if !keep {
+				continue
+			}
+			select {
+			case out <- t:
+				// success
+			case <-ctx.Done():
+				return ctx.Err()
+			}
+		case <-ctx.Done():
+			return ctx.Err()
+		}
+	}
+}

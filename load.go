@@ -84,7 +84,8 @@ func MustForEachLineIn(path string, cb func(line string)) {
 }
 
 // MustReadLines reads the entire file into memory and returns a slice
-// containing each line of text (essentially, strings.Split(contents, "\n")).
+// containing each line of text (essentially, strings.Split(contents, "\n"), but
+// ignoring the final element if it is empty).
 // This is a helper intended for very simple programs (e.g. Advent of Code)
 // and is not recommended for production code, particularly because the
 // logged message may be somewhat unhelpful.
@@ -93,5 +94,9 @@ func MustReadLines(path string) []string {
 	if err != nil {
 		log.Fatalf("MustReadLines: opening file: %v", err)
 	}
-	return strings.Split(string(b), "\n")
+	lines := strings.Split(string(b), "\n")
+	if n1 := len(lines)-1; lines[n1] == "" {
+		return lines[:n1]
+	}
+	return lines
 }
