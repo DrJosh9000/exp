@@ -103,6 +103,25 @@ func MustReadLines(path string) []string {
 	return lines
 }
 
+// MustReadDelimited reads the entire file into memory, splits the contents by
+// a delimiter, trims leading and trailing spaces from each component, and
+// returns the results as a slice.
+// If an error is encountered, it calls log.Fatal.
+// This is a helper intended for very simple programs (e.g. Advent of Code)
+// and is not recommended for production code, particularly because the
+// logged message may be somewhat unhelpful.
+func MustReadDelimited(path, delim string) []string {
+	b, err := os.ReadFile(path)
+	if err != nil {
+		log.Fatalf("MustReadLines: opening file: %v", err)
+	}
+	parts := strings.Split(string(b), delim)
+	for i, l := range parts {
+		parts[i] = strings.TrimSpace(l)
+	}
+	return parts
+}
+
 // MustReadInts reads the entire file into memory, splits the contents by the
 // delimiter, parses each component as a decimal integer, and returns them as a
 // slice.
@@ -121,7 +140,7 @@ func MustReadInts(path, delim string) []int {
 	}
 	out := make([]int, len(parts))
 	for i, s := range parts {
-		n, err := strconv.Atoi(s)
+		n, err := strconv.Atoi(strings.TrimSpace(s))
 		if err != nil {
 			log.Fatalf("MustReadInts: parsing part %d %q: %v", i, s, err)
 		}
