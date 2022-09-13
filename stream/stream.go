@@ -101,12 +101,14 @@ func TextFileSource(ctx context.Context, path string, out chan<- string) error {
 
 // Transform receives values from in, applies the transform tf, and sends the
 // results on out. It does not receive a new value before sending the previous
-// result.
+// result. After transforming all values from in, and in is closed, out is
+// closed and Transform returns.
 func Transform[S, T any](ctx context.Context, in <-chan S, out chan<- T, tf func(context.Context, S) (T, error)) error {
 	for {
 		select {
 		case s, open := <-in:
 			if !open {
+				close(out)
 				return nil
 			}
 			t, err := tf(ctx, s)
