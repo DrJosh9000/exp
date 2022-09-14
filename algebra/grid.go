@@ -44,7 +44,7 @@ func (g Grid[T]) Clone() Grid[T] {
 func (g Grid[T]) Size() (h, w int) {
 	if len(g) == 0 {
 		return 0, 0
-	} 
+	}
 	return len(g), len(g[0])
 }
 
@@ -68,7 +68,6 @@ func (g Grid[T]) Transpose() Grid[T] {
 	}
 	return ng
 }
-
 
 // FlipHorizontal returns a new Grid flipped horizontally (left becomes right).
 func (g Grid[T]) FlipHorizontal() Grid[T] {
@@ -141,7 +140,6 @@ func ByteGrid(s []string) Grid[byte] {
 	}
 	return g
 }
-
 
 // RuneGrid converts a grid of characters into a Grid[rune].
 func RuneGrid(runes []string) Grid[rune] {

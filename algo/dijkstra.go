@@ -17,7 +17,7 @@
 // Package algo implements a few generic algorithms.
 package algo
 
-// Dijkstra is an implementation of Dijkstra's algorithm for single-source 
+// Dijkstra is an implementation of Dijkstra's algorithm for single-source
 // shortest paths on a directed, non-negatively weighted graph. It returns a map
 // of each node to the previous node in the shortest path to that node. This
 // predecessor map is only complete for visited nodes.
@@ -31,7 +31,7 @@ package algo
 // and the partial map of predecessors, back to the caller. The algorithm takes
 // care of tracking nodes that have already been visited - since visit does not
 // need to track already-visited nodes, it can safely return all known neighbours
-// of a node. 
+// of a node.
 func Dijkstra[T comparable, D Orderable](start T, visit func(T, D) (map[T]D, error)) (map[T]T, error) {
 	prev := make(map[T]T)
 	done := make(map[T]bool)

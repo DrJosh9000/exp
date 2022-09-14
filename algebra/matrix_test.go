@@ -27,7 +27,7 @@ func TestMatrixMultiply(t *testing.T) {
 	I := M.IdentityMatrix(3)
 	m := Grid[int]{
 		[]int{4, -2, 7},
-		[]int{3, 3, 0}, 
+		[]int{3, 3, 0},
 		[]int{-2, 2, 1},
 	}
 	if diff := cmp.Diff(M.Mul(I, m), m); diff != "" {

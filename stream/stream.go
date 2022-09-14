@@ -20,10 +20,10 @@ package stream
 
 import (
 	"context"
-	"fmt"	
+	"fmt"
 )
 
-// NopSource closes the channel. The implementation is trivial, but is 
+// NopSource closes the channel. The implementation is trivial, but is
 // provided out of a sense of dedication to completeness.
 func NopSource[T any](_ context.Context, out chan<- T) {
 	close(out)
@@ -127,7 +127,7 @@ func Transform[S, T any](ctx context.Context, in <-chan S, out chan<- T, tf func
 	}
 }
 
-// Filter receives values from in, and passes them to f. If f reports true, the 
+// Filter receives values from in, and passes them to f. If f reports true, the
 // value is sent on out. After receiving all values from in, and in is closed,
 // out is closed and Filter returns.
 func Filter[T any](ctx context.Context, in <-chan S, out chan<- T, f func(context.Context, T) (bool, error)) error {

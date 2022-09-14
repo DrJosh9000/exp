@@ -15,7 +15,7 @@
 */
 
 // Package exp contains some code that should be considered experimental and
-// comes with absolutely no guarantees whatsoever (particularly around 
+// comes with absolutely no guarantees whatsoever (particularly around
 // compatibility, consistency, or functionality).
 package exp // import "github.com/DrJosh9000/exp"
 
@@ -97,7 +97,7 @@ func MustReadLines(path string) []string {
 		log.Fatalf("MustReadLines: opening file: %v", err)
 	}
 	lines := strings.Split(string(b), "\n")
-	if n1 := len(lines)-1; lines[n1] == "" {
+	if n1 := len(lines) - 1; lines[n1] == "" {
 		return lines[:n1]
 	}
 	return lines
@@ -135,7 +135,7 @@ func MustReadInts(path, delim string) []int {
 		log.Fatalf("MustReadInts: opening file: %v", err)
 	}
 	parts := strings.Split(string(b), delim)
-	if n1 := len(parts)-1; parts[n1] == "" {
+	if n1 := len(parts) - 1; parts[n1] == "" {
 		parts = parts[:n1]
 	}
 	out := make([]int, len(parts))

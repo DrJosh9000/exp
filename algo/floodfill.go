@@ -16,7 +16,7 @@
 
 package algo
 
-// FloodFill is an algorithm for finding single-source shortest paths in an 
+// FloodFill is an algorithm for finding single-source shortest paths in an
 // unweighted directed graph. It follows the same conventions as the Dijkstra
 // function. It assumes the weight of each edge is always 1, tallying distances
 // as ints. This flood-fill is generic and makes minimal assumptions about each

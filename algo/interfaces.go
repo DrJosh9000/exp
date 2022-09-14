@@ -19,20 +19,29 @@ package algo
 // Orderable types have any of the the built-in comparable types that support
 // the < and + operators as the underlying type.
 type Orderable interface {
-	~int | ~int8 | ~int16 | ~int32 | ~int64 | 
-	~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr |
-	~float32 | ~float64 | ~string
+	Real | ~string
 }
 
 // Numeric types have any of the built-in numeric types as the underlying type.
 type Numeric interface {
-	~int | ~int8 | ~int16 | ~int32 | ~int64 | 
-	~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr |
-	~float32 | ~float64 | ~complex64 | ~complex128
+	Real | ~complex64 | ~complex128
 }
 
 // Addable types have any of the built-in types that support the + operator
 // as the underlying type.
 type Addable interface {
-	Orderable | Numeric
+	Numeric | ~string
+}
+
+// Integer types have any of the built-in signed or unsigned integer types as
+// the underlying type.
+type Integer interface {
+	~int | ~int8 | ~int16 | ~int32 | ~int64 |
+		~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr
+}
+
+// Real types have any of the built-in integer or float types (but not complex)
+// as the underlying type.
+type Real interface {
+	Integer | ~float32 | ~float64
 }

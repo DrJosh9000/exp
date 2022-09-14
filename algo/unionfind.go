@@ -26,47 +26,47 @@ type DisjointSets[T comparable] map[T]T
 // If x is not contained in d, Find inserts x as a new disjoint singleton set
 // within d and returns x.
 func (d DisjointSets[T]) Find(x T) T {
- 	if _, found := d[x]; !found {
- 		d[x] = x
- 		return x
- 	}
- 	for x != d[x] {
- 		d[x] = d[d[x]] // path compression
- 		x = d[x]
- 	}
- 	return x
+	if _, found := d[x]; !found {
+		d[x] = x
+		return x
+	}
+	for x != d[x] {
+		d[x] = d[d[x]] // path compression
+		x = d[x]
+	}
+	return x
 }
 
 // Union merges the set containing x with the set containing y.
 // If both of the elements are not contained in d, a new set is created.
 func (d DisjointSets[T]) Union(x, y T) {
- 	p, q := d.Find(x), d.Find(y)
- 	if p == q {
- 		return
- 	}
- 	if rand.Intn(2) == 0 {
- 		d[p] = q
- 	} else {
- 		d[q] = p
- 	}
+	p, q := d.Find(x), d.Find(y)
+	if p == q {
+		return
+	}
+	if rand.Intn(2) == 0 {
+		d[p] = q
+	} else {
+		d[q] = p
+	}
 }
 
 // Reps returns a set containing each representative element.
 func (d DisjointSets[T]) Reps() Set[T] {
- 	s := make(Set[T])
- 	for x := range d {
- 		s.Insert(d.Find(x))
- 	}
- 	return s
+	s := make(Set[T])
+	for x := range d {
+		s.Insert(d.Find(x))
+	}
+	return s
 }
 
 // Sets returns all the sets in d, in a map from the representative element
 // to a slice containing all members of that set.
 func (d DisjointSets[T]) Sets() map[T][]T {
-   m := make(map[T][]T)
-   for x := range d {
-      r := d.Find(x)
-      m[r] = append(m[r], x)
-   }
-   return m
+	m := make(map[T][]T)
+	for x := range d {
+		r := d.Find(x)
+		m[r] = append(m[r], x)
+	}
+	return m
 }

@@ -18,14 +18,15 @@ package algo
 
 // Pow raises base to the power pow, where multiplication is given by op.
 // The only requirements are that:
-// * op must be 3-power associative for base (i.e. 
-//   `op(op(base,base),base) == op(base,op(base,base))`), and
-// * pow must be strictly positive (pow >= 1).
+//   - op must be 3-power associative for base (i.e.
+//     `op(op(base,base),base) == op(base,op(base,base))`), and
+//   - pow must be strictly positive (pow >= 1).
+//
 // op is called O(log(pow) + bits.OnesCount(pow)) times.
 //
 // If you are working with big numbers, use math/big.
-// 
-// Note that, for this implementation, op need *not* define a monoid (i.e. 
+//
+// Note that, for this implementation, op need *not* define a monoid (i.e.
 // have an identity element in T) or even be generally associative. 3-power
 // associativity implies commutativity among powers of a value.
 // For Pow to be able to handle a pow == 0 in full generality would require
@@ -41,7 +42,7 @@ func Pow[T any](base T, pow uint, op func(T, T) T) T {
 	var accum T
 	ini := false
 	for {
-		if pow % 2 == 1 {
+		if pow%2 == 1 {
 			if ini {
 				accum = op(accum, base)
 			} else {

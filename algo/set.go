@@ -16,15 +16,18 @@
 
 package algo
 
-// Set is a generic set type based on map. 
+// Set is a generic set type based on map.
 // There's a million of these now; what harm is another?
 //
 // Set aims to work in a slice-like fashion with nil-valued sets, i.e.:
-//   var s Set[int]
-//   s = s.Insert(420, 69)   // s now contains 420 and 69
+//
+//	var s Set[int]
+//	s = s.Insert(420, 69)   // s now contains 420 and 69
+//
 // However, Insert (and Add) do not make new sets if the set is non-nil, e.g.:
-//   s := make(Set[int])
-//   s.Insert(420, 69)   // as above
+//
+//	s := make(Set[int])
+//	s.Insert(420, 69)   // as above
 type Set[T comparable] map[T]struct{}
 
 // ToSlice returns a new slice with all the elements of the set in random order.
@@ -58,7 +61,7 @@ func (s Set[T]) Contains(x T) bool {
 	return c
 }
 
-// Add adds the elements from t into s, and returns s. If s == nil, Add 
+// Add adds the elements from t into s, and returns s. If s == nil, Add
 // returns a new set which is a copy of t.
 func (s Set[T]) Add(t Set[T]) Set[T] {
 	if s == nil {
@@ -102,13 +105,13 @@ func (s Set[T]) Copy() Set[T] {
 
 // Union returns a new set containing elements from both sets.
 func (s Set[T]) Union(t Set[T]) Set[T] {
-	u := make(Set[T], len(s) + len(t))
+	u := make(Set[T], len(s)+len(t))
 	u.Add(s)
 	u.Add(t)
 	return u
 }
 
-// Intersection returns a new set with elements common to both sets. 
+// Intersection returns a new set with elements common to both sets.
 func (s Set[T]) Intersection(t Set[T]) Set[T] {
 	u := make(Set[T])
 	for x := range s {

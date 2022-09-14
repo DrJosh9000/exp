@@ -25,48 +25,48 @@ type Vector[T any, R Ring[T]] struct{}
 
 // Add returns the vector sum v+w.
 func (Vector[T, R]) Add(v, w []T) []T {
-    if len(v) != len(w) {
-        panic("mismatching vector sizes")
-    }
-    var r R
-    o := make([]T, len(v))
+	if len(v) != len(w) {
+		panic("mismatching vector sizes")
+	}
+	var r R
+	o := make([]T, len(v))
 	for i := range o {
-        o[i] = r.Add(v[i], w[i])
-    }
-    return o
+		o[i] = r.Add(v[i], w[i])
+	}
+	return o
 }
 
 // Neg returns -v (the vector pointing in the opposite direction).
 func (Vector[T, R]) Neg(v []T) []T {
-    o := make([]T, len(v))
-    var r R
+	o := make([]T, len(v))
+	var r R
 	for i := range o {
-        o[i] = r.Neg(v[i])
-    }
-    return o
+		o[i] = r.Neg(v[i])
+	}
+	return o
 }
 
 // ScalarMul returns kv.
 func (Vector[T, R]) ScalarMul(k T, v []T) []T {
-    o := make([]T, len(v))
-    var r R
+	o := make([]T, len(v))
+	var r R
 	for i := range o {
-        o[i] = r.Mul(k, v[i])
-    }
-    return o
+		o[i] = r.Mul(k, v[i])
+	}
+	return o
 }
 
 // Dot returns the dot product (also known as inner product) v.w.
 func (Vector[T, R]) Dot(v, w []T) T {
-    if len(v) != len(w) {
-        panic("mismatching vector sizes")
-    }
-    var s T
-    var r R
+	if len(v) != len(w) {
+		panic("mismatching vector sizes")
+	}
+	var s T
+	var r R
 	for i := range v {
-        s = r.Add(s, r.Mul(v[i], w[i]))
-    }
-    return s
+		s = r.Add(s, r.Mul(v[i], w[i]))
+	}
+	return s
 }
 
 /*

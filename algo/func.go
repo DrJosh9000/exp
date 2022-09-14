@@ -52,7 +52,7 @@ func MapOrErr[S, T any](in []S, f func(S) (T, error)) ([]T, error) {
 	return out, nil
 }
 
-// Sum sums any slice where the elements support the + operator. 
+// Sum sums any slice where the elements support the + operator.
 // If len(in) == 0, the zero value for T is returned.
 func Sum[T Addable](in []T) T {
 	var accum T
@@ -74,7 +74,7 @@ func Prod[T Numeric](in []T) T {
 
 // Foldl implements a functional "reduce" operation over slices.
 // Loosely: Foldl(in, f) = f(f(f(...f(in[0], in[1]), in[2]),...), in[len(in)-1]).
-// For example, if in is []int, Foldl(in, func(x, y int) int { return x + y }) 
+// For example, if in is []int, Foldl(in, func(x, y int) int { return x + y })
 // computes the sum. (The Sum function achieves the same thing in less code.)
 // If len(in) == 0, the zero value for T is returned.
 func Foldl[T any](in []T, f func(T, T) T) T {
@@ -106,7 +106,7 @@ func Foldr[T any](in []T, f func(T, T) T) T {
 // the value itself. If len(m) == 0, the zero values for K and V are returned. If
 // there is a tie, the first key encountered is returned (which could be random).
 func MapMin[K comparable, V Orderable](m map[K]V) (K, V) {
-	b := false 
+	b := false
 	var bestk K
 	var minv V
 	for k, v := range m {
@@ -121,7 +121,7 @@ func MapMin[K comparable, V Orderable](m map[K]V) (K, V) {
 // the value itself. If len(m) == 0, the zero values for K and V are returned. If
 // there is a tie, the first key encountered is returned (which could be random).
 func MapMax[K comparable, V Orderable](m map[K]V) (K, V) {
-	b := false 
+	b := false
 	var bestk K
 	var maxv V
 	for k, v := range m {

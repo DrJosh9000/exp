@@ -25,7 +25,7 @@ type PriQueue[T any, D Orderable] minHeap[T, D]
 // Push adds an item to the queue with a priority.
 func (pq *PriQueue[T, D]) Push(item T, priority D) {
 	heap.Push((*minHeap[T, D])(pq), WeightedItem[T, D]{
-		Item: item,
+		Item:   item,
 		Weight: priority,
 	})
 }
@@ -55,7 +55,7 @@ func (h *minHeap[T, D]) Pop() interface{} {
 }
 
 // WeightedItem is an item together with a weight value.
-type WeightedItem[T any, D Orderable] struct{
-	Item T
+type WeightedItem[T any, D Orderable] struct {
+	Item   T
 	Weight D
 }

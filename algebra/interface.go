@@ -21,9 +21,9 @@ package algebra
 type Ring[T any] interface {
 	Add(T, T) T
 	Neg(T) T
-    Zero() T
+	Zero() T
 	Mul(T, T) T
-    Identity() T
+	Identity() T
 }
 
 // DivisionRing is a Ring that also has multiplicative inverses (which can be

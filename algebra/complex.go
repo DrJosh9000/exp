@@ -50,7 +50,7 @@ func (Complex[T, R]) Format(z [2]T) string {
 func (Complex[T, R]) Add(z, w [2]T) [2]T {
 	var r R
 	return [2]T{
-		r.Add(z[0], w[0]), 
+		r.Add(z[0], w[0]),
 		r.Add(z[1], w[1]),
 	}
 }

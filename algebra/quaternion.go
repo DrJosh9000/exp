@@ -38,9 +38,9 @@ func (Quaternion[T, R]) Format(x [4]T) string {
 func (Quaternion[T, R]) Add(x, y [4]T) [4]T {
 	var r R
 	return [4]T{
-		r.Add(x[0], y[0]), 
-		r.Add(x[1], y[1]), 
-		r.Add(x[2], y[2]), 
+		r.Add(x[0], y[0]),
+		r.Add(x[1], y[1]),
+		r.Add(x[2], y[2]),
 		r.Add(x[3], y[3]),
 	}
 }
@@ -52,13 +52,13 @@ func (Quaternion[T, R]) Neg(x [4]T) [4]T {
 }
 
 // Zero returns 0 + 0𝕚 + 0𝕛 + 0𝕜
-func (Quaternion[T, R]) Zero() [4]T { 
+func (Quaternion[T, R]) Zero() [4]T {
 	var r R
 	return [4]T{r.Zero(), r.Zero(), r.Zero(), r.Zero()}
 }
 
 // Identity returns 1 + 0𝕚 + 0𝕛 + 0𝕜
-func (Quaternion[T, R]) Identity() [4]T { 
+func (Quaternion[T, R]) Identity() [4]T {
 	var r R
 	return [4]T{r.Identity(), r.Zero(), r.Zero(), r.Zero()}
 }
