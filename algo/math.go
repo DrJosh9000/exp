@@ -26,13 +26,14 @@ func Abs[T Real](x T) T {
 	return x
 }
 
-// Max returns the argument closest to infinity. If no arguments are provided,
-// Max returns 0.
-func Max[T Real](x ...T) T {
+// Max returns the greatest argument (using `>`). If no arguments are provided,
+// Max returns the zero value for T.
+func Max[T Orderable](x ...T) T {
+	var m T
 	if len(x) == 0 {
-		return 0
+		return m
 	}
-	m := x[0]
+	m = x[0]
 	for _, t := range x[1:] {
 		if t > m {
 			m = t
@@ -41,17 +42,68 @@ func Max[T Real](x ...T) T {
 	return m
 }
 
-// Min returns the argument closest to negative infinity. If no arguments are
-// provided, Min returns 0.
-func Min[T Real](x ...T) T {
+// Min returns the least argument (using `<`). If no arguments are provided, Min
+// returns the zero value for T.
+func Min[T Orderable](x ...T) T {
+	var m T
 	if len(x) == 0 {
-		return 0
+		return m
 	}
-	m := x[0]
+	m = x[0]
 	for _, t := range x[1:] {
 		if t < m {
 			m = t
 		}
 	}
 	return m
+}
+
+// Sum sums any slice where the elements support the + operator.
+// If len(in) == 0, the zero value for T is returned.
+func Sum[T Addable](in []T) T {
+	var accum T
+	for _, x := range in {
+		accum += x
+	}
+	return accum
+}
+
+// Prod computes the product of elements in any slice where the element type
+// is numeric. If len(in) == 0, 1 is returned.
+func Prod[T Numeric](in []T) T {
+	var accum T = 1
+	for _, x := range in {
+		accum *= x
+	}
+	return accum
+}
+
+// MapMin finds the smallest value in the map m and returns the corresponding key and
+// the value itself. If len(m) == 0, the zero values for K and V are returned. If
+// there is a tie, the first key encountered is returned (which could be random).
+func MapMin[K comparable, V Orderable](m map[K]V) (K, V) {
+	b := false
+	var bestk K
+	var minv V
+	for k, v := range m {
+		if !b || v < minv {
+			b, bestk, minv = true, k, v
+		}
+	}
+	return bestk, minv
+}
+
+// MapMax finds the largest value in the map m and returns the corresponding key and
+// the value itself. If len(m) == 0, the zero values for K and V are returned. If
+// there is a tie, the first key encountered is returned (which could be random).
+func MapMax[K comparable, V Orderable](m map[K]V) (K, V) {
+	b := false
+	var bestk K
+	var maxv V
+	for k, v := range m {
+		if !b || v > maxv {
+			b, bestk, maxv = true, k, v
+		}
+	}
+	return bestk, maxv
 }
