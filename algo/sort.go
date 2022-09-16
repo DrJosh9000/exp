@@ -18,7 +18,7 @@ func SortByMapAsc[K comparable, V Orderable](s []K, m map[K]V) {
 	sort.SliceStable(s, func(i, j int) bool { return m[s[i]] < m[s[j]] })
 }
 
-// SortByMapAsc stably sorts the slice using the map to provide values to 
+// SortByMapDesc stably sorts the slice using the map to provide values to 
 // compare.
 func SortByMapDesc[K comparable, V Orderable](s []K, m map[K]V) {
 	sort.SliceStable(s, func(i, j int) bool { return m[s[i]] > m[s[j]] })
