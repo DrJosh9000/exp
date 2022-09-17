@@ -20,8 +20,8 @@ package algo
 // (Just write the loop!)
 
 // Map calls f with each element of in, to build the output slice.
-func Map[S, T any](in []S, f func(S) T) []T {
-	out := make([]T, len(in))
+func Map[S ~[]X, X, Y any](in S, f func(X) Y) []Y {
+	out := make([]Y, len(in))
 	for i, x := range in {
 		out[i] = f(x)
 	}
@@ -30,8 +30,8 @@ func Map[S, T any](in []S, f func(S) T) []T {
 
 // MapOrErr calls f with each element of in, to build the output slice.
 // It stops and returns the first error returned by f.
-func MapOrErr[S, T any](in []S, f func(S) (T, error)) ([]T, error) {
-	out := make([]T, len(in))
+func MapOrErr[S ~[]X, X, Y any](in S, f func(X) (Y, error)) ([]Y, error) {
+	out := make([]Y, len(in))
 	for i, x := range in {
 		y, err := f(x)
 		if err != nil {
@@ -46,9 +46,9 @@ func MapOrErr[S, T any](in []S, f func(S) (T, error)) ([]T, error) {
 // Loosely: Foldl(in, f) = f(f(f(...f(in[0], in[1]), in[2]),...), in[len(in)-1]).
 // For example, if in is []int, Foldl(in, func(x, y int) int { return x + y })
 // computes the sum. (The Sum function achieves the same thing in less code.)
-// If len(in) == 0, the zero value for T is returned.
-func Foldl[T any](in []T, f func(T, T) T) T {
-	var accum T
+// If len(in) == 0, the zero value for E is returned.
+func Foldl[S ~[]E, E any](in S, f func(E, E) E) E {
+	var accum E
 	if len(in) == 0 {
 		return accum
 	}
@@ -60,8 +60,8 @@ func Foldl[T any](in []T, f func(T, T) T) T {
 }
 
 // Foldr is the same as Foldl, but considers elements in the reverse.
-func Foldr[T any](in []T, f func(T, T) T) T {
-	var accum T
+func Foldr[S ~[]E, E any](in S, f func(E, E) E) E {
+	var accum E
 	if len(in) == 0 {
 		return accum
 	}
@@ -74,7 +74,7 @@ func Foldr[T any](in []T, f func(T, T) T) T {
 }
 
 // Reverse reverses a slice.
-func Reverse[T any](s []T) {
+func Reverse[S ~[]E, E any](s S) {
 	n1 := len(s) - 1
 	for i := 0; i < len(s)/2; i++ {
 		s[i], s[n1-i] = s[n1-i], s[i]
@@ -82,8 +82,8 @@ func Reverse[T any](s []T) {
 }
 
 // Freq counts the frequency of each item in the slice.
-func Freq[T comparable](s []T) map[T]int {
-	m := make(map[T]int)
+func Freq[S ~[]E, E comparable](s S) map[E]int {
+	m := make(map[E]int)
 	for _, x := range s {
 		m[x]++
 	}

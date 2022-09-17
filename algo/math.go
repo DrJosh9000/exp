@@ -61,9 +61,9 @@ func Min[T constraints.Ordered](x ...T) T {
 }
 
 // Sum sums any slice where the elements support the + operator.
-// If len(in) == 0, the zero value for T is returned.
-func Sum[T Addable](in []T) T {
-	var accum T
+// If len(in) == 0, the zero value for E is returned.
+func Sum[S ~[]E, E Addable](in S) E {
+	var accum E
 	for _, x := range in {
 		accum += x
 	}
@@ -72,8 +72,8 @@ func Sum[T Addable](in []T) T {
 
 // Prod computes the product of elements in any slice where the element type
 // is numeric. If len(in) == 0, 1 is returned.
-func Prod[T Numeric](in []T) T {
-	var accum T = 1
+func Prod[S ~[]E, E Numeric](in S) E {
+	var accum E = 1
 	for _, x := range in {
 		accum *= x
 	}
@@ -84,7 +84,7 @@ func Prod[T Numeric](in []T) T {
 // key and the value itself. If len(m) == 0, the zero values for K and V are
 // returned. If there is a tie, the first key encountered is returned (which
 // could be random).
-func MapMin[K comparable, V constraints.Ordered](m map[K]V) (K, V) {
+func MapMin[M ~map[K]V, K comparable, V constraints.Ordered](m M) (K, V) {
 	b := false
 	var bestk K
 	var minv V
@@ -100,7 +100,7 @@ func MapMin[K comparable, V constraints.Ordered](m map[K]V) (K, V) {
 // key and the value itself. If len(m) == 0, the zero values for K and V are
 // returned. If there is a tie, the first key encountered is returned (which
 // could be random).
-func MapMax[K comparable, V constraints.Ordered](m map[K]V) (K, V) {
+func MapMax[M ~map[K]V, K comparable, V constraints.Ordered](m M) (K, V) {
 	b := false
 	var bestk K
 	var maxv V
