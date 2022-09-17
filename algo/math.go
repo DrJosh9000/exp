@@ -16,6 +16,8 @@
 
 package algo
 
+import "golang.org/x/exp/constraints"
+
 // Abs returns the absolute value of x (with no regard for negative overflow).
 //
 // The math/cmplx package provides a version of Abs for complex types.
@@ -28,7 +30,7 @@ func Abs[T Real](x T) T {
 
 // Max returns the greatest argument (using `>`). If no arguments are provided,
 // Max returns the zero value for T.
-func Max[T Orderable](x ...T) T {
+func Max[T constraints.Ordered](x ...T) T {
 	var m T
 	if len(x) == 0 {
 		return m
@@ -44,7 +46,7 @@ func Max[T Orderable](x ...T) T {
 
 // Min returns the least argument (using `<`). If no arguments are provided, Min
 // returns the zero value for T.
-func Min[T Orderable](x ...T) T {
+func Min[T constraints.Ordered](x ...T) T {
 	var m T
 	if len(x) == 0 {
 		return m
@@ -78,10 +80,11 @@ func Prod[T Numeric](in []T) T {
 	return accum
 }
 
-// MapMin finds the smallest value in the map m and returns the corresponding key and
-// the value itself. If len(m) == 0, the zero values for K and V are returned. If
-// there is a tie, the first key encountered is returned (which could be random).
-func MapMin[K comparable, V Orderable](m map[K]V) (K, V) {
+// MapMin finds the least value in the map m and returns the corresponding
+// key and the value itself. If len(m) == 0, the zero values for K and V are
+// returned. If there is a tie, the first key encountered is returned (which
+// could be random).
+func MapMin[K comparable, V constraints.Ordered](m map[K]V) (K, V) {
 	b := false
 	var bestk K
 	var minv V
@@ -93,10 +96,11 @@ func MapMin[K comparable, V Orderable](m map[K]V) (K, V) {
 	return bestk, minv
 }
 
-// MapMax finds the largest value in the map m and returns the corresponding key and
-// the value itself. If len(m) == 0, the zero values for K and V are returned. If
-// there is a tie, the first key encountered is returned (which could be random).
-func MapMax[K comparable, V Orderable](m map[K]V) (K, V) {
+// MapMax finds the greatest value in the map m and returns the corresponding
+// key and the value itself. If len(m) == 0, the zero values for K and V are
+// returned. If there is a tie, the first key encountered is returned (which
+// could be random).
+func MapMax[K comparable, V constraints.Ordered](m map[K]V) (K, V) {
 	b := false
 	var bestk K
 	var maxv V

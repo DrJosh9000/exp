@@ -19,16 +19,6 @@ package algo
 // This file implements some functions that are unnecessary in readable Go.
 // (Just write the loop!)
 
-// Keys returns a slice with all the keys from a map, in whatever order
-// they are iterated (i.e. random order).
-func Keys[K comparable, V any](m map[K]V) []K {
-	ks := make([]K, 0, len(m))
-	for k := range m {
-		ks = append(ks, k)
-	}
-	return ks
-}
-
 // Map calls f with each element of in, to build the output slice.
 func Map[S, T any](in []S, f func(S) T) []T {
 	out := make([]T, len(in))
@@ -76,10 +66,26 @@ func Foldr[T any](in []T, f func(T, T) T) T {
 		return accum
 	}
 	accum = in[len(in)-1]
-	n2 := len(in)-2
+	n2 := len(in) - 2
 	for i := range in[1:] {
 		accum = f(accum, in[n2-i])
 	}
 	return accum
 }
 
+// Reverse reverses a slice.
+func Reverse[T any](s []T) {
+	n1 := len(s) - 1
+	for i := 0; i < len(s)/2; i++ {
+		s[i], s[n1-i] = s[n1-i], s[i]
+	}
+}
+
+// Freq counts the frequency of each item in the slice.
+func Freq[T comparable](s []T) map[T]int {
+	m := make(map[T]int)
+	for _, x := range s {
+		m[x]++
+	}
+	return m
+}

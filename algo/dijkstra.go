@@ -17,6 +17,8 @@
 // Package algo implements a few generic algorithms.
 package algo
 
+import "golang.org/x/exp/constraints"
+
 // Dijkstra is an implementation of Dijkstra's algorithm for single-source
 // shortest paths on a directed, non-negatively weighted graph. It returns a map
 // of each node to the previous node in the shortest path to that node. This
@@ -32,7 +34,7 @@ package algo
 // care of tracking nodes that have already been visited - since visit does not
 // need to track already-visited nodes, it can safely return all known neighbours
 // of a node.
-func Dijkstra[T comparable, D Orderable](start T, visit func(T, D) (map[T]D, error)) (map[T]T, error) {
+func Dijkstra[T comparable, D constraints.Ordered](start T, visit func(T, D) (map[T]D, error)) (map[T]T, error) {
 	prev := make(map[T]T)
 	done := make(map[T]bool)
 	var zero D

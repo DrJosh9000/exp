@@ -23,7 +23,7 @@ import (
 	"strings"
 )
 
-// Digits converts a string of decimal digits (0-9) into an []int, where
+// Digits converts a string of decimal digits (0-9) into `[]int`, where
 // each element is the value of a digit.
 func Digits(s string) ([]int, error) {
 	r := make([]int, len(s))

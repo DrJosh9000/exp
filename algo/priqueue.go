@@ -16,11 +16,15 @@
 
 package algo
 
-import "container/heap"
+import (
+	"container/heap"
+
+	"golang.org/x/exp/constraints"
+)
 
 // PriQueue implements a priority queue of items of type T each having a
 // priority of type D. It uses container/heap under the hood.
-type PriQueue[T any, D Orderable] minHeap[T, D]
+type PriQueue[T any, D constraints.Ordered] minHeap[T, D]
 
 // Push adds an item to the queue with a priority.
 func (pq *PriQueue[T, D]) Push(item T, priority D) {
@@ -41,13 +45,13 @@ func (pq *PriQueue[T, D]) Pop() (T, D) {
 func (pq *PriQueue[T, D]) Len() int { return len(*pq) }
 
 // minHeap provides the underlying implementation of heap.Interface.
-type minHeap[T any, D Orderable] []WeightedItem[T, D]
+type minHeap[T any, D constraints.Ordered] []WeightedItem[T, D]
 
-func (h minHeap[T, D]) Len() int            { return len(h) }
-func (h minHeap[T, D]) Less(i, j int) bool  { return h[i].Weight < h[j].Weight }
-func (h minHeap[T, D]) Swap(i, j int)       { h[i], h[j] = h[j], h[i] }
-func (h *minHeap[T, D]) Push(x interface{}) { *h = append(*h, x.(WeightedItem[T, D])) }
-func (h *minHeap[T, D]) Pop() interface{} {
+func (h minHeap[T, D]) Len() int           { return len(h) }
+func (h minHeap[T, D]) Less(i, j int) bool { return h[i].Weight < h[j].Weight }
+func (h minHeap[T, D]) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
+func (h *minHeap[T, D]) Push(x any)        { *h = append(*h, x.(WeightedItem[T, D])) }
+func (h *minHeap[T, D]) Pop() any {
 	n1 := len(*h) - 1
 	i := (*h)[n1]
 	*h = (*h)[0:n1]
@@ -55,7 +59,7 @@ func (h *minHeap[T, D]) Pop() interface{} {
 }
 
 // WeightedItem is an item together with a weight value.
-type WeightedItem[T any, D Orderable] struct {
+type WeightedItem[T any, D constraints.Ordered] struct {
 	Item   T
 	Weight D
 }
