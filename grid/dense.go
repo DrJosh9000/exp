@@ -122,8 +122,8 @@ func (g Dense[T]) Transpose() Dense[T] {
 	return ng
 }
 
-// FlipHorizontal returns a new grid flipped horizontally (left becomes right).
-func (g Dense[T]) FlipHorizontal() Dense[T] {
+// FlipH returns a new grid flipped horizontally (left becomes right).
+func (g Dense[T]) FlipH() Dense[T] {
 	ng := Make[T](g.Size())
 	for j, row := range g {
 		for i := range row {
@@ -133,8 +133,8 @@ func (g Dense[T]) FlipHorizontal() Dense[T] {
 	return ng
 }
 
-// FlipVertical returns a new grid flipped vertically (top becomes bottom).
-func (g Dense[T]) FlipVertical() Dense[T] {
+// FlipV returns a new grid flipped vertically (top becomes bottom).
+func (g Dense[T]) FlipV() Dense[T] {
 	ng := Make[T](g.Size())
 	for j, row := range g {
 		for i := range row {
@@ -144,9 +144,8 @@ func (g Dense[T]) FlipVertical() Dense[T] {
 	return ng
 }
 
-// RotateClockwise returns a new grid with entries rotated clockwise by 90
-// degrees.
-func (g Dense[T]) RotateClockwise() Dense[T] {
+// RotateCW returns a new grid with entries rotated clockwise by 90 degrees.
+func (g Dense[T]) RotateCW() Dense[T] {
 	h, w := g.Size()
 	ng := Make[T](w, h) // note flipped dimensions
 	for j, row := range g {
@@ -157,9 +156,9 @@ func (g Dense[T]) RotateClockwise() Dense[T] {
 	return ng
 }
 
-// RotateAnticlockwise returns a new grid with entries rotated anticlockwise by
-// 90 degrees.
-func (g Dense[T]) RotateAnticlockwise() Dense[T] {
+// RotateACW returns a new grid with entries rotated anticlockwise by 90
+// degrees.
+func (g Dense[T]) RotateACW() Dense[T] {
 	h, w := g.Size()
 	ng := Make[T](w, h) // note flipped dimensions
 	for j, row := range g {
