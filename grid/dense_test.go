@@ -14,7 +14,7 @@
    limitations under the License.
 */
 
-package algebra
+package grid
 
 import (
 	"testing"

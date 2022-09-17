@@ -19,13 +19,14 @@ package algebra
 import (
 	"testing"
 
+	"github.com/DrJosh9000/exp/grid"
 	"github.com/google/go-cmp/cmp"
 )
 
 func TestMatrixMultiply(t *testing.T) {
 	var M Matrix[int, Integer]
 	I := M.IdentityMatrix(3)
-	m := Grid[int]{
+	m := grid.Dense[int]{
 		[]int{4, -2, 7},
 		[]int{3, 3, 0},
 		[]int{-2, 2, 1},

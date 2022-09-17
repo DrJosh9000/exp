@@ -16,13 +16,15 @@
 
 package algebra
 
-// Matrix implements matrix algebra on Grid[T] given a ring R.
+import "github.com/DrJosh9000/exp/grid"
+
+// Matrix implements matrix algebra on grid.Dense[T] given a ring R.
 type Matrix[T any, R Ring[T]] struct{}
 
 // ZeroMatrix returns a zero matrix of size h x w.
-func (Matrix[T, R]) ZeroMatrix(h, w int) Grid[T] {
+func (Matrix[T, R]) ZeroMatrix(h, w int) grid.Dense[T] {
 	var r R
-	m := MakeGrid[T](h, w)
+	m := grid.Make[T](h, w)
 	for i := range m {
 		for j := range m[i] {
 			m[i][j] = r.Zero()
@@ -32,9 +34,9 @@ func (Matrix[T, R]) ZeroMatrix(h, w int) Grid[T] {
 }
 
 // IdentityMatrix returns an identity matrix of size n.
-func (Matrix[T, R]) IdentityMatrix(n int) Grid[T] {
+func (Matrix[T, R]) IdentityMatrix(n int) grid.Dense[T] {
 	var r R
-	m := MakeGrid[T](n, n)
+	m := grid.Make[T](n, n)
 	for i := range m {
 		for j := range m[i] {
 			if i == j {
@@ -48,13 +50,13 @@ func (Matrix[T, R]) IdentityMatrix(n int) Grid[T] {
 }
 
 // Add adds two matrices.
-func (Matrix[T, R]) Add(m, n Grid[T]) Grid[T] {
+func (Matrix[T, R]) Add(m, n grid.Dense[T]) grid.Dense[T] {
 	h, w := m.Size()
 	nh, nw := n.Size()
 	if h != nh || w != nw {
 		panic("adding matrices of incompatible sizes")
 	}
-	o := MakeGrid[T](h, w)
+	o := grid.Make[T](h, w)
 	var r R
 	for i := range o {
 		for j := range o[i] {
@@ -65,9 +67,9 @@ func (Matrix[T, R]) Add(m, n Grid[T]) Grid[T] {
 }
 
 // Neg returns the matrix with all entries negated.
-func (Matrix[T, R]) Neg(m Grid[T]) Grid[T] {
+func (Matrix[T, R]) Neg(m grid.Dense[T]) grid.Dense[T] {
 	var r R
-	o := MakeGrid[T](m.Size())
+	o := grid.Make[T](m.Size())
 	for i := range o {
 		for j := range o[i] {
 			o[i][j] = r.Neg(m[i][j])
@@ -77,9 +79,9 @@ func (Matrix[T, R]) Neg(m Grid[T]) Grid[T] {
 }
 
 // ScalarMul returns the matrix with entries multiplied by k.
-func (Matrix[T, R]) ScalarMul(k T, m Grid[T]) Grid[T] {
+func (Matrix[T, R]) ScalarMul(k T, m grid.Dense[T]) grid.Dense[T] {
 	var r R
-	o := MakeGrid[T](m.Size())
+	o := grid.Make[T](m.Size())
 	for i := range o {
 		for j := range o[i] {
 			o[i][j] = r.Mul(k, m[i][j])
@@ -90,7 +92,7 @@ func (Matrix[T, R]) ScalarMul(k T, m Grid[T]) Grid[T] {
 
 // Mul multiplies two matrices of compatible size (the width of m must equal
 // the height of n)
-func (M Matrix[T, R]) Mul(m, n Grid[T]) Grid[T] {
+func (M Matrix[T, R]) Mul(m, n grid.Dense[T]) grid.Dense[T] {
 	mh, mw := m.Size()
 	nh, nw := n.Size()
 	if mw != nh {
@@ -111,7 +113,7 @@ func (M Matrix[T, R]) Mul(m, n Grid[T]) Grid[T] {
 /*
 // Inv returns the matrix inverse, or panics if T is not a division ring or
 // the matrix is singular.
-func (M Matrix[T, R]) Inv(m Grid[T]) Grid[T] {
+func (M Matrix[T, R]) Inv(m grid.Dense[T]) grid.Dense[T] {
 	h, w := m.Size()
 	if h == 0 || w == 0 {
 		return m
