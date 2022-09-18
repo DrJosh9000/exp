@@ -19,12 +19,13 @@ package grid
 import (
 	"fmt"
 	"image"
+	"image/color"
 )
 
 // Dense is a dense grid - a "2D array" generic type.
 type Dense[T any] [][]T
 
-// Make makes a Dense of width w and height h. 
+// Make makes a Dense of width w and height h.
 //
 // (If you want a sparse grid, use `make(Sparse[T])`.)
 func Make[T any](h, w int) Dense[T] {
@@ -196,7 +197,7 @@ func (g Dense[T]) RotateACW() Dense[T] {
 }
 
 // FromStringsFunc produces a grid from a slice of source strings s,
-// containing data for one row per element, and a function for parsing each 
+// containing data for one row per element, and a function for parsing each
 // string into a `[]T` row. Unequal-length rows are treated as an error.
 func FromStringsFunc[T any](s []string, parse func(string) ([]T, error)) (Dense[T], error) {
 	if len(s) == 0 {
