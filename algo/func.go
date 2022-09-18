@@ -42,6 +42,16 @@ func MapOrErr[S ~[]X, X, Y any](in S, f func(X) (Y, error)) ([]Y, error) {
 	return out, nil
 }
 
+// MapMap is like Map, but for maps. This seems thoroughly pointless.
+func MapMap[M ~map[K1]V1, K1, K2 comparable, V1, V2 any](m M, f func(K1, V1) (K2, V2)) map[K2]V2 {
+	n := make(map[K2]V2, len(m))
+	for k1, v1 := range m {
+		k2, v2 := f(k1, v1)
+		n[k2] = v2
+	}
+	return n
+}
+
 // Foldl implements a functional "reduce" operation over slices.
 // Loosely: Foldl(in, f) = f(f(f(...f(in[0], in[1]), in[2]),...), in[len(in)-1]).
 // For example, if in is []int, Foldl(in, func(x, y int) int { return x + y })
@@ -81,11 +91,20 @@ func Reverse[S ~[]E, E any](s S) {
 	}
 }
 
-// Freq counts the frequency of each item in the slice.
+// Freq counts the frequency of each item in a slice.
 func Freq[S ~[]E, E comparable](s S) map[E]int {
-	m := make(map[E]int)
+	h := make(map[E]int)
 	for _, x := range s {
-		m[x]++
+		h[x]++
 	}
-	return m
+	return h
+}
+
+// MapFreq counts the frequency of each value in a map.
+func MapFreq[M ~map[K]V, K, V comparable](m M) map[V]int {
+	h := make(map[V]int)
+	for _, x := range h {
+		h[x]++
+	}
+	return h
 }

@@ -75,6 +75,17 @@ func (g Dense[T]) ToSparse() Sparse[T] {
 	return s
 }
 
+// ToRGBA converts a dense grid into an RGBA image using a colouring function.
+func (g Dense[T]) ToRGBA(cf func(T) color.Color) *image.RGBA {
+	img := image.NewRGBA(g.Bounds())
+	for y, row := range g {
+		for x, t := range row {
+			img.Set(x, y, cf(t))
+		}
+	}
+	return img
+}
+
 // Clone makes a copy of the grid.
 func (g Dense[T]) Clone() Dense[T] {
 	ng := Make[T](g.Size())
@@ -101,11 +112,26 @@ func (g Dense[T]) Area() int {
 	return h * w
 }
 
+// Bounds returns a rectangle the size of the grid.
+func (g Dense[T]) Bounds() image.Rectangle {
+	h, w := g.Size()
+	return image.Rect(0, 0, w, h)
+}
+
 // Fill fills the grid with the value v.
 func (g Dense[T]) Fill(v T) {
 	for _, row := range g {
 		for i := range row {
 			row[i] = v
+		}
+	}
+}
+
+// FillRect fills a sub-rectangle of the grid with the value v.
+func (g Dense[T]) FillRect(r image.Rectangle, v T) {
+	for y := r.Min.Y; y < r.Max.Y; y++ {
+		for x := r.Min.X; x < r.Max.X; x++ {
+			g[y][x] = v
 		}
 	}
 }
@@ -188,4 +214,15 @@ func FromStringsFunc[T any](s []string, parse func(string) ([]T, error)) (Dense[
 		}
 	}
 	return g, nil
+}
+
+// Freq produces a summary of the number of different values in a grid.
+func Freq[T comparable](g Dense[T]) map[T]int {
+	h := make(map[T]int)
+	for _, row := range g {
+		for _, v := range row {
+			h[v]++
+		}
+	}
+	return h
 }
