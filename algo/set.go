@@ -61,6 +61,20 @@ func (s Set[T]) Contains(x T) bool {
 	return c
 }
 
+// Disjoint reports whether s and t have an empty intersection.
+func (s Set[T]) Disjoint(t Set[T]) bool {
+	// (Fewer lookups in large map) is faster than (more lookups in small map).
+	if len(s) > len(t) {
+		s, t = t, s
+	}
+	for x := range s {
+		if t.Contains(x) {
+			return false
+		}
+	}
+	return true
+}
+
 // Add adds the elements from t into s, and returns s. If s == nil, Add
 // returns a new set which is a copy of t.
 func (s Set[T]) Add(t Set[T]) Set[T] {
@@ -113,7 +127,14 @@ func (s Set[T]) Union(t Set[T]) Set[T] {
 
 // Intersection returns a new set with elements common to both sets.
 func (s Set[T]) Intersection(t Set[T]) Set[T] {
+	// (Fewer lookups in large map) is faster than (more lookups in small map).
+	if len(s) > len(t) {
+		s, t = t, s
+	}
 	u := make(Set[T])
+	if len(s) == 0 || len(t) == 0 {
+		return u
+	}
 	for x := range s {
 		if t.Contains(x) {
 			u.Insert(x)
@@ -146,6 +167,9 @@ func (s Set[T]) SymmetricDifference(t Set[T]) Set[T] {
 
 // SubsetOf reports whether s is a subset or equal to t.
 func (s Set[T]) SubsetOf(t Set[T]) bool {
+	if len(s) < len(t) {
+		return false
+	}
 	for x := range s {
 		if !t.Contains(x) {
 			return false
@@ -156,5 +180,5 @@ func (s Set[T]) SubsetOf(t Set[T]) bool {
 
 // Equal reports whether two sets are equal.
 func (s Set[T]) Equal(t Set[T]) bool {
-	return s.SubsetOf(t) && t.SubsetOf(s)
+	return len(s) == len(t) && s.SubsetOf(t) && t.SubsetOf(s)
 }
