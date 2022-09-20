@@ -103,7 +103,7 @@ func Freq[S ~[]E, E comparable](s S) map[E]int {
 // MapFreq counts the frequency of each value in a map.
 func MapFreq[M ~map[K]V, K, V comparable](m M) map[V]int {
 	h := make(map[V]int)
-	for _, x := range h {
+	for _, x := range m {
 		h[x]++
 	}
 	return h
