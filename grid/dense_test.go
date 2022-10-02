@@ -23,12 +23,12 @@ import (
 )
 
 func TestTranspose(t *testing.T) {
-	g := Grid[int]{
+	g := Dense[int]{
 		[]int{0, 1, 2, 3},
 		[]int{3, 4, 5, 6},
 		[]int{6, 7, 8, 9},
 	}
-	want := Grid[int]{
+	want := Dense[int]{
 		[]int{0, 3, 6},
 		[]int{1, 4, 7},
 		[]int{2, 5, 8},
@@ -41,12 +41,12 @@ func TestTranspose(t *testing.T) {
 }
 
 func TestFlipH(t *testing.T) {
-	g := Grid[int]{
+	g := Dense[int]{
 		[]int{0, 1, 2, 3},
 		[]int{3, 4, 5, 6},
 		[]int{6, 7, 8, 9},
 	}
-	want := Grid[int]{
+	want := Dense[int]{
 		[]int{3, 2, 1, 0},
 		[]int{6, 5, 4, 3},
 		[]int{9, 8, 7, 6},
@@ -58,12 +58,12 @@ func TestFlipH(t *testing.T) {
 }
 
 func TestFlipV(t *testing.T) {
-	g := Grid[int]{
+	g := Dense[int]{
 		[]int{0, 1, 2, 3},
 		[]int{3, 4, 5, 6},
 		[]int{6, 7, 8, 9},
 	}
-	want := Grid[int]{
+	want := Dense[int]{
 		[]int{6, 7, 8, 9},
 		[]int{3, 4, 5, 6},
 		[]int{0, 1, 2, 3},
@@ -75,12 +75,12 @@ func TestFlipV(t *testing.T) {
 }
 
 func TestRotateCW(t *testing.T) {
-	g := Grid[int]{
+	g := Dense[int]{
 		[]int{0, 1, 2, 3},
 		[]int{3, 4, 5, 6},
 		[]int{6, 7, 8, 9},
 	}
-	want := Grid[int]{
+	want := Dense[int]{
 		[]int{6, 3, 0},
 		[]int{7, 4, 1},
 		[]int{8, 5, 2},
@@ -93,12 +93,12 @@ func TestRotateCW(t *testing.T) {
 }
 
 func TestRotateACW(t *testing.T) {
-	g := Grid[int]{
+	g := Dense[int]{
 		[]int{0, 1, 2, 3},
 		[]int{3, 4, 5, 6},
 		[]int{6, 7, 8, 9},
 	}
-	want := Grid[int]{
+	want := Dense[int]{
 		[]int{3, 6, 9},
 		[]int{2, 5, 8},
 		[]int{1, 4, 7},

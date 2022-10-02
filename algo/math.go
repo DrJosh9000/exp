@@ -28,6 +28,34 @@ func Abs[T Real](x T) T {
 	return x
 }
 
+// GCD returns the greatest common divisor of a and b.
+func GCD[T constraints.Integer](a, b T) T {
+	if a < b {
+		a, b = b, a
+	}
+	for b != 0 {
+		a, b = b, a%b
+	}
+	return a
+}
+
+// XGCD returns the greatest common divisor of a and b, as well as the Bézout 
+// coefficients (x and y such that ax + by = GCD(a, b)).
+// For arithmetic on large integers, use math/big.
+func XGCD[T constraints.Integer](a, b T) (d, x, y T) {
+	// Based on https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm.
+	or, r := a, b
+	os, s := T(1), T(0)
+	ot, t := T(0), T(1)
+	for r != 0 {
+		q := or / r
+		or, r = r, or-q*r
+		os, s = s, os-q*s
+		ot, t = t, ot-q*t
+	}	
+	return or, os, ot
+}
+
 // Max returns the greatest argument (using `>`). If no arguments are provided,
 // Max returns the zero value for T.
 func Max[T constraints.Ordered](x ...T) T {
