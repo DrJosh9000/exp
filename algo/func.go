@@ -91,6 +91,30 @@ func Reverse[S ~[]E, E any](s S) {
 	}
 }
 
+// Count counts the number of occurrences of e in the slice s, in O(len(s))
+// time. This is faster than Freq when counting only one or a few values.
+func Count[S ~[]E, E comparable](s S, e E) int {
+	count := 0
+	for _, x := range s {
+		if x == e {
+			count++
+		}
+	}
+	return count
+}
+
+// MapCount counts the number of occurrences of v in the map m, in O(len(m))
+// time. This is faster than MapFreq when counting only one or a few values.
+func MapCount[M ~map[K]V, K, V comparable](m M, v V) int {
+	count := 0
+	for _, x := range m {
+		if x == v {
+			count++
+		}
+	}
+	return count
+}
+
 // Freq counts the frequency of each item in a slice.
 func Freq[S ~[]E, E comparable](s S) map[E]int {
 	h := make(map[E]int)
