@@ -16,7 +16,9 @@
 
 package algo
 
-import "golang.org/x/exp/constraints"
+import (
+	"golang.org/x/exp/constraints"
+)
 
 // This file implements some functions that are unnecessary in readable Go.
 // (Just write the loop!)
@@ -159,4 +161,28 @@ func SliceFromMap[M ~map[K]V, K constraints.Integer, V any](m M) ([]V, K) {
 		s[k-min] = v
 	}
 	return s, min
+}
+
+// NextPermutation reorders s into the next permutation (in the lexicographic
+// order), reporting if it was able to do so. Based on Knuth.
+func NextPermutation[S ~[]E, E constraints.Ordered](s S) bool {
+	n1 := len(s) - 1
+	if n1 == 0 {
+		return false
+	}
+	i := n1 - 1
+	for ; s[i] >= s[i+1]; i-- {
+		if i == 0 {
+			return false
+		}
+	}
+	k := n1
+	for s[i] >= s[k] {
+		k--
+	}
+	s[i], s[k] = s[k], s[i]
+	for j, k := i+1, n1; j < k; j, k = j+1, k-1 {
+		s[j], s[k] = s[k], s[j]
+	}
+	return true
 }
