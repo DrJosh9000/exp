@@ -39,7 +39,7 @@ func GCD[T constraints.Integer](a, b T) T {
 	return a
 }
 
-// XGCD returns the greatest common divisor of a and b, as well as the Bézout 
+// XGCD returns the greatest common divisor of a and b, as well as the Bézout
 // coefficients (x and y such that ax + by = GCD(a, b)).
 // For arithmetic on large integers, use math/big.
 func XGCD[T constraints.Integer](a, b T) (d, x, y T) {
@@ -52,7 +52,7 @@ func XGCD[T constraints.Integer](a, b T) (d, x, y T) {
 		or, r = r, or-q*r
 		os, s = s, os-q*s
 		ot, t = t, ot-q*t
-	}	
+	}
 	return or, os, ot
 }
 
@@ -138,4 +138,35 @@ func MapMax[M ~map[K]V, K comparable, V constraints.Ordered](m M) (K, V) {
 		}
 	}
 	return bestk, maxv
+}
+
+// MapRange reports the minimum and maximum values in the map m, and their
+// corresponding keys. It does the work of MapMin and MapMax in one loop.
+// If m is empty, the zero values for K and V are returned.
+func MapRange[M ~map[K]V, K comparable, V constraints.Ordered](m M) (mink, maxk K, minv, maxv V) {
+	minb, maxb := false, false
+	for k, v := range m {
+		if !minb || v < minv {
+			minb, mink, minv = true, k, v
+		}
+		if !maxb || v > maxv {
+			maxb, maxk, maxv = true, k, v
+		}
+	}
+	return mink, maxk, minv, maxv
+}
+
+// MapKeyRange reports the minimum and maximum keys in the map m.
+// If m is empty, the zero value for K is returned.
+func MapKeyRange[M ~map[K]V, K constraints.Ordered, V any](m M) (min, max K) {
+	minb, maxb := false, false
+	for k := range m {
+		if !minb || k < min {
+			minb, min = true, k
+		}
+		if !maxb || k > max {
+			maxb, max = true, k
+		}
+	}
+	return min, max
 }

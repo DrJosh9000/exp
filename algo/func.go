@@ -16,6 +16,8 @@
 
 package algo
 
+import "golang.org/x/exp/constraints"
+
 // This file implements some functions that are unnecessary in readable Go.
 // (Just write the loop!)
 
@@ -131,4 +133,30 @@ func MapFreq[M ~map[K]V, K, V comparable](m M) map[V]int {
 		h[x]++
 	}
 	return h
+}
+
+// MapFromSlice creates a map[int]E from a slice of E. There's usually no
+// reason for this.
+func MapFromSlice[S ~[]E, E any](s S) map[int]E {
+	m := make(map[int]E, len(s))
+	for i, e := range s {
+		m[i] = e
+	}
+	return m
+}
+
+// SliceFromMap creates a slice of V from a map[K]V, plus an offset value
+// such that s[k] == m[k+offset] for all k in m.
+// The slice will be exactly large enough to contain all keys (offsetted).
+// The result will be extremely memory wasteful if the keys in m are few and far
+// between.
+// Entries in the slice with no corresponding entry in the map will have the
+// zero value.
+func SliceFromMap[M ~map[K]V, K constraints.Integer, V any](m M) ([]V, K) {
+	min, max := MapKeyRange(m)
+	s := make([]V, max-min+1)
+	for k, v := range m {
+		s[k-min] = v
+	}
+	return s, min
 }
