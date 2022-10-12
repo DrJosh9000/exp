@@ -23,31 +23,33 @@
 package emu
 
 import (
+	"bufio"
 	"fmt"
 	"os"
-	"strings"
-	"bufio"
 	"os/exec"
 	"plugin"
-	
+	"strings"
+
 	"github.com/DrJosh9000/exp/algo"
 )
 
 const preamble = `package main
 
-func Run(r, m []int, send func(int), recv func() int) {
+func Run(r, m []int, send func(int) error, recv func() (int, error)) error {
 `
 
+const postamble = "\treturn nil\n}\n"
+
 // RunFunc is the type of the function that is compiled.
-type RunFunc func(r, m []int, send func(int), recv func() int)
+type RunFunc = func(r, m []int, send func(int) error, recv func() (int, error)) error
 
 // TranslatorFunc translates an input line number and line of code into an
 // implementation (one or more lines of Go) and a set of jump targets (line
 // numbers). A TranslatorFunc should not produce labels; Transpile takes care
 // of inserting necessary labels.
-type TranslatorFunc func(line int, operand ...string) (impl string, jumpTargets []int, err error)
+type TranslatorFunc func(line int, args []string) (impl string, jumpTargets []int, err error)
 
-// Translate translates a program into a Go implementation and a set of jump 
+// Translate translates a program into a Go implementation and a set of jump
 // targets.
 func Translate(program []string, translators map[string]TranslatorFunc) ([]string, algo.Set[int], error) {
 	targets := make(algo.Set[int])
@@ -58,7 +60,7 @@ func Translate(program []string, translators map[string]TranslatorFunc) ([]strin
 		if !ok {
 			return nil, nil, fmt.Errorf("unknown opcode %q on line %d", ls[0], lno)
 		}
-		impl, jts, err := tl(lno, ls[1:]...)
+		impl, jts, err := tl(lno, ls[1:])
 		if err != nil {
 			return nil, nil, fmt.Errorf("translating line %d: %w", lno, err)
 		}
@@ -73,15 +75,15 @@ func Translate(program []string, translators map[string]TranslatorFunc) ([]strin
 // Transpile transpiles a program using a set of opcode translators, and returns
 // a func natively implementing the program.
 func Transpile(program []string, translators map[string]TranslatorFunc) (RunFunc, error) {
-	
+
 	// --- Translate first before writing files or invoking the compiler. --- \\
 	impl, jts, err := Translate(program, translators)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// --- Write the temporary Go file. --- \\
-	f, err := os.CreateTemp(".", "emu*.go")
+	f, err := os.CreateTemp("", "emu*.go")
 	if err != nil {
 		return nil, fmt.Errorf("creating temp file: %w", err)
 	}
@@ -101,8 +103,8 @@ func Transpile(program []string, translators map[string]TranslatorFunc) (RunFunc
 			return nil, fmt.Errorf("writing line %d: %w", lno, err)
 		}
 	}
-	if _, err := bf.WriteString("}\n"); err != nil {
-		return nil, fmt.Errorf("writing closing brace: %w", err)
+	if _, err := bf.WriteString(postamble); err != nil {
+		return nil, fmt.Errorf("writing postamble: %w", err)
 	}
 	if err := bf.Flush(); err != nil {
 		return nil, fmt.Errorf("flushing buffer: %v", err)
@@ -110,7 +112,7 @@ func Transpile(program []string, translators map[string]TranslatorFunc) (RunFunc
 	if err := f.Close(); err != nil {
 		return nil, fmt.Errorf("closing file: %w", err)
 	}
-	
+
 	// --- Compile to a plugin --- \\
 	soname := fname + ".so"
 	cmd := exec.Command("go", "build", "-o", soname, "-buildmode=plugin", fname)
@@ -118,7 +120,7 @@ func Transpile(program []string, translators map[string]TranslatorFunc) (RunFunc
 		return nil, fmt.Errorf("compiling temporary file: %w", err)
 	}
 	defer os.Remove(soname)
-	
+
 	// --- Open the plugin and find the entry point --- \\
 	p, err := plugin.Open(soname)
 	if err != nil {
@@ -128,10 +130,9 @@ func Transpile(program []string, translators map[string]TranslatorFunc) (RunFunc
 	if err != nil {
 		return nil, fmt.Errorf("looking up Run in plugin: %w", err)
 	}
-	r, ok := rf.(func([]int, []int, func(int), func() int))
+	r, ok := rf.(RunFunc)
 	if !ok {
 		return nil, fmt.Errorf("symbol Run has bad type %T", rf)
 	}
-	return RunFunc(r), nil
+	return r, nil
 }
-
