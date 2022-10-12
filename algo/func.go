@@ -166,10 +166,10 @@ func SliceFromMap[M ~map[K]V, K constraints.Integer, V any](m M) ([]V, K) {
 // NextPermutation reorders s into the next permutation (in the lexicographic
 // order), reporting if it was able to do so. Based on Knuth.
 func NextPermutation[S ~[]E, E constraints.Ordered](s S) bool {
-	n1 := len(s) - 1
-	if n1 == 0 {
+	if len(s) < 2 {
 		return false
 	}
+	n1 := len(s) - 1
 	i := n1 - 1
 	for ; s[i] >= s[i+1]; i-- {
 		if i == 0 {
