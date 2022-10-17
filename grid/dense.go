@@ -25,7 +25,7 @@ import (
 // Dense is a dense grid - a "2D array" generic type.
 type Dense[T any] [][]T
 
-// Make makes a Dense of width w and height h.
+// Make makes a dense grid of width w and height h.
 //
 // (If you want a sparse grid, use `make(Sparse[T])`.)
 func Make[T any](h, w int) Dense[T] {
