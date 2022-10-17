@@ -137,6 +137,24 @@ func (g Dense[T]) FillRect(r image.Rectangle, v T) {
 	}
 }
 
+// Map applies a transformation function to each element in the map.
+func (g Dense[T]) Map(f func(T) T) {
+	for _, row := range g {
+		for i, x := range row {
+			row[i] = f(x)
+		}
+	}
+}
+
+// MapRect applies a transformation function to a sub-rectangle of the grid.
+func (g Dense[T]) MapRect(r image.Rectangle, f func(T) T) {
+	for y := r.Min.Y; y < r.Max.Y; y++ {
+		for x := r.Min.X; x < r.Max.X; x++ {
+			g[y][x] = f(g[y][x])
+		}
+	}
+}
+
 // Transpose returns a new grid reflected about the diagonal.
 func (g Dense[T]) Transpose() Dense[T] {
 	h, w := g.Size()
