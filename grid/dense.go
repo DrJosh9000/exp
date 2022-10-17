@@ -91,9 +91,7 @@ func (g Dense[T]) ToRGBA(cf func(T) color.Color) *image.RGBA {
 func (g Dense[T]) Clone() Dense[T] {
 	ng := Make[T](g.Size())
 	for j := range g {
-		for i := range g[j] {
-			ng[j][i] = g[j][i]
-		}
+		copy(ng[j], g[j])
 	}
 	return ng
 }
