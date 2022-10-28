@@ -170,3 +170,27 @@ func MapKeyRange[M ~map[K]V, K constraints.Ordered, V any](m M) (min, max K) {
 	}
 	return min, max
 }
+
+// NextPermutation reorders s into the next permutation (in the lexicographic
+// order), reporting if it was able to do so. Based on Knuth.
+func NextPermutation[S ~[]E, E constraints.Ordered](s S) bool {
+	if len(s) < 2 {
+		return false
+	}
+	n1 := len(s) - 1
+	i := n1 - 1
+	for ; s[i] >= s[i+1]; i-- {
+		if i == 0 {
+			return false
+		}
+	}
+	k := n1
+	for s[i] >= s[k] {
+		k--
+	}
+	s[i], s[k] = s[k], s[i]
+	for j, k := i+1, n1; j < k; j, k = j+1, k-1 {
+		s[j], s[k] = s[k], s[j]
+	}
+	return true
+}
