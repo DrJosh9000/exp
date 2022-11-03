@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"image"
 	"image/color"
+	"strings"
 )
 
 // Dense is a dense grid - a "2D array" generic type.
@@ -87,6 +88,49 @@ func (g Dense[T]) ToRGBA(cf func(T) color.Color) *image.RGBA {
 	return img
 }
 
+func (g Dense[T]) String() string {
+	if len(g) == 0 {
+		return ""
+	}
+	// Format the grid into strings with fmt.Sprint.
+	h := Transform(g, func(x T) string {
+		return fmt.Sprint(x)
+	})
+	// Find column widths large enough for all items.
+	cw := make([]int, len(g[0]))
+	for _, row := range h {
+		for i, el := range row {
+			if len(el) > cw[i] {
+				cw[i] = len(el)
+			}
+		}
+	}
+
+	// If T is a string type, left-align cells.
+	var t T
+	_, la := any(t).(string)
+
+	// Build the output string.
+	sb := new(strings.Builder)
+	sb.WriteString("[\n")
+	for _, row := range h {
+		sb.WriteString(" [")
+		for i, el := range row {
+			pad := strings.Repeat(" ", cw[i]-len(el)+1)
+			if !la {
+				sb.WriteString(pad)
+			}
+			sb.WriteString(el)
+			if la {
+				sb.WriteString(pad)
+			}
+		}
+		sb.WriteString(" ],\n")
+	}
+	sb.WriteString("]")
+	return sb.String()
+}
+
 // Clone makes a copy of the grid.
 func (g Dense[T]) Clone() Dense[T] {
 	ng := Make[T](g.Size())
@@ -135,7 +179,21 @@ func (g Dense[T]) FillRect(r image.Rectangle, v T) {
 	}
 }
 
-// Map applies a transformation function to each element in the map.
+// Transform transforms a grid into a new grid (of possibly a different type).
+func Transform[S, T any](g Dense[S], f func(S) T) Dense[T] {
+	if len(g) == 0 {
+		return nil
+	}
+	h := Make[T](g.Size())
+	for j, row := range g {
+		for i, x := range row {
+			h[j][i] = f(x)
+		}
+	}
+	return h
+}
+
+// Map applies a transformation function to each element in the grid in-place.
 func (g Dense[T]) Map(f func(T) T) {
 	for _, row := range g {
 		for i, x := range row {
