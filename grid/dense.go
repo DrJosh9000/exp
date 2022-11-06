@@ -40,6 +40,9 @@ func Make[T any](h, w int) Dense[T] {
 // Map converts a Dense[S] into a Dense[T] by using a transformation function
 // tf.
 func Map[S, T any](g Dense[S], tf func(S) T) Dense[T] {
+	if len(g) == 0 {
+		return nil
+	}
 	ng := Make[T](g.Size())
 	for j, row := range g {
 		for i, x := range row {
@@ -52,6 +55,9 @@ func Map[S, T any](g Dense[S], tf func(S) T) Dense[T] {
 // MapOrError converts a Dense[S] into a Dense[T] by using a transformation
 // function tf. On the first error returned by tf, MapOrError returns an error.
 func MapOrError[S, T any](g Dense[S], tf func(S) (T, error)) (Dense[T], error) {
+	if len(g) == 0 {
+		return nil, nil
+	}
 	ng := Make[T](g.Size())
 	for j, row := range g {
 		for i, x := range row {
@@ -93,7 +99,7 @@ func (g Dense[T]) String() string {
 		return ""
 	}
 	// Format the grid into strings with fmt.Sprint.
-	h := Transform(g, func(x T) string {
+	h := Map(g, func(x T) string {
 		return fmt.Sprint(x)
 	})
 	// Find column widths large enough for all items.
@@ -177,20 +183,6 @@ func (g Dense[T]) FillRect(r image.Rectangle, v T) {
 			g[y][x] = v
 		}
 	}
-}
-
-// Transform transforms a grid into a new grid (of possibly a different type).
-func Transform[S, T any](g Dense[S], f func(S) T) Dense[T] {
-	if len(g) == 0 {
-		return nil
-	}
-	h := Make[T](g.Size())
-	for j, row := range g {
-		for i, x := range row {
-			h[j][i] = f(x)
-		}
-	}
-	return h
 }
 
 // Map applies a transformation function to each element in the grid in-place.
