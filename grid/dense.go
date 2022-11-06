@@ -125,7 +125,7 @@ func (g Dense[T]) String() string {
 				sb.WriteString(pad)
 			}
 		}
-		sb.WriteString(" ],\n")
+		sb.WriteString(" ]\n")
 	}
 	sb.WriteString("]")
 	return sb.String()
