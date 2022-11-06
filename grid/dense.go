@@ -122,7 +122,8 @@ func (g Dense[T]) String() string {
 	for _, row := range h {
 		sb.WriteString(" [")
 		for i, el := range row {
-			pad := strings.Repeat(" ", cw[i]-len(el)+1)
+			pad := strings.Repeat(" ", cw[i]-len(el))
+			sb.WriteRune(' ')
 			if !la {
 				sb.WriteString(pad)
 			}
