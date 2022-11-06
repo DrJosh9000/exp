@@ -95,13 +95,18 @@ func (g Dense[T]) ToRGBA(cf func(T) color.Color) *image.RGBA {
 }
 
 func (g Dense[T]) String() string {
-	if len(g) == 0 {
-		return ""
+	if g == nil {
+		return "nil"
 	}
+	if len(g) == 0 {
+		return "[]"
+	}
+
 	// Format the grid into strings with fmt.Sprint.
 	h := Map(g, func(x T) string {
 		return fmt.Sprint(x)
 	})
+
 	// Find column widths large enough for all items.
 	cw := make([]int, len(g[0]))
 	for _, row := range h {
