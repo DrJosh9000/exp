@@ -16,6 +16,8 @@
 
 package algo
 
+import "fmt"
+
 // Set is a generic set type based on map.
 // There's a million of these now; what harm is another?
 //
@@ -29,6 +31,10 @@ package algo
 //	s := make(Set[int])
 //	s.Insert(420, 69)   // as above
 type Set[T comparable] map[T]struct{}
+
+func (s Set[T]) String() string {
+	return fmt.Sprintf("set%v", s.ToSlice())
+}
 
 // ToSlice returns a new slice with all the elements of the set in random order.
 func (s Set[T]) ToSlice() []T {
