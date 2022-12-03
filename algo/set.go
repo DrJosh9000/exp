@@ -188,3 +188,27 @@ func (s Set[T]) SubsetOf(t Set[T]) bool {
 func (s Set[T]) Equal(t Set[T]) bool {
 	return len(s) == len(t) && s.SubsetOf(t) && t.SubsetOf(s)
 }
+
+// Union returns the union of multiple sets as a new set.
+func Union[T comparable](sets ...Set[T]) Set[T] {
+	if len(sets) == 0 {
+		return nil
+	}
+	out := make(Set[T])
+	for _, s := range sets {
+		out.Add(s)
+	}
+	return out
+}
+
+// Intersection returns the intersection of multiple sets as a new set.
+func Intersection[T comparable](sets ...Set[T]) Set[T] {
+	if len(sets) == 0 {
+		return nil
+	}
+	out := sets[0].Copy()
+	for _, s := range sets[1:] {
+		out.Keep(s)
+	}
+	return out
+}
