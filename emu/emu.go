@@ -25,6 +25,7 @@ package emu
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"plugin"
@@ -44,44 +45,62 @@ const postamble = "\treturn nil\n}\n"
 type RunFunc = func(r, m []int, send func(int) error, recv func() (int, error)) error
 
 // TranslatorFunc translates an input line number and line of code into an
-// implementation (one or more lines of Go) and a set of jump targets (line
-// numbers). A TranslatorFunc should not produce labels; Transpile takes care
-// of inserting necessary labels.
+// implementation (one or more lines of Go) and a set of absolute jump targets
+// (line numbers). A TranslatorFunc should not produce labels; Transpile takes
+// care of inserting necessary labels. However, a TranslatorFunc must implement
+// its own jumps (e.g. `goto l%d`).
 type TranslatorFunc func(line int, args []string) (impl string, jumpTargets []int, err error)
 
-// Translate translates a program into a Go implementation and a set of jump
-// targets.
-func Translate(program []string, translators map[string]TranslatorFunc) ([]string, algo.Set[int], error) {
+// Translate translates a program into a Go implementation and writes it to w.
+func Translate(w io.Writer, program []string, translators map[string]TranslatorFunc) error {
+	if _, err := fmt.Fprint(w, preamble); err != nil {
+		return fmt.Errorf("writing preamble: %w", err)
+	}
+
 	targets := make(algo.Set[int])
-	out := make([]string, len(program))
+	lines := make([]string, len(program))
 	for lno, line := range program {
 		ls := strings.Fields(line)
 		tl, ok := translators[ls[0]]
 		if !ok {
-			return nil, nil, fmt.Errorf("unknown opcode %q on line %d", ls[0], lno)
+			return fmt.Errorf("unknown opcode %q on line %d", ls[0], lno)
 		}
 		impl, jts, err := tl(lno, ls[1:])
 		if err != nil {
-			return nil, nil, fmt.Errorf("translating line %d: %w", lno, err)
+			return fmt.Errorf("translating line %d: %w", lno, err)
 		}
 		for _, jt := range jts {
 			targets[jt] = struct{}{}
 		}
-		out[lno] = impl
+		lines[lno] = impl
 	}
-	return out, targets, nil
+
+	for lno, line := range lines {
+		if targets.Contains(lno) {
+			if _, err := fmt.Fprintf(w, "l%d:\n", lno); err != nil {
+				return fmt.Errorf("writing label %d: %w", lno, err)
+			}
+		}
+		if _, err := fmt.Fprintf(w, "\t%s\n", line); err != nil {
+			return fmt.Errorf("writing line %d: %w", lno, err)
+		}
+	}
+	// Jump past the end?
+	if end := len(lines); targets.Contains(end) {
+		if _, err := fmt.Fprintf(w, "l%d:\n", end); err != nil {
+			return fmt.Errorf("writing label %d: %w", end, err)
+		}
+	}
+
+	if _, err := fmt.Fprint(w, postamble); err != nil {
+		return fmt.Errorf("writing postamble: %w", err)
+	}
+	return nil
 }
 
 // Transpile transpiles a program using a set of opcode translators, and returns
 // a func natively implementing the program.
 func Transpile(program []string, translators map[string]TranslatorFunc) (RunFunc, error) {
-
-	// --- Translate first before writing files or invoking the compiler. --- \\
-	impl, jts, err := Translate(program, translators)
-	if err != nil {
-		return nil, err
-	}
-
 	// --- Write the temporary Go file. --- \\
 	f, err := os.CreateTemp("", "emu*.go")
 	if err != nil {
@@ -90,24 +109,11 @@ func Transpile(program []string, translators map[string]TranslatorFunc) (RunFunc
 	fname := f.Name()
 	defer os.Remove(fname)
 	bf := bufio.NewWriter(f)
-	if _, err := bf.WriteString(preamble); err != nil {
-		return nil, fmt.Errorf("writing preamble: %w", err)
-	}
-	for lno, line := range impl {
-		if jts.Contains(lno) {
-			if _, err := fmt.Fprintf(bf, "l%d:\n", lno); err != nil {
-				return nil, fmt.Errorf("writing label %d: %w", lno, err)
-			}
-		}
-		if _, err := fmt.Fprintf(bf, "\t%s\n", line); err != nil {
-			return nil, fmt.Errorf("writing line %d: %w", lno, err)
-		}
-	}
-	if _, err := bf.WriteString(postamble); err != nil {
-		return nil, fmt.Errorf("writing postamble: %w", err)
+	if err := Translate(bf, program, translators); err != nil {
+		return nil, fmt.Errorf("translating program: %w", err)
 	}
 	if err := bf.Flush(); err != nil {
-		return nil, fmt.Errorf("flushing buffer: %v", err)
+		return nil, fmt.Errorf("flushing buffer: %w", err)
 	}
 	if err := f.Close(); err != nil {
 		return nil, fmt.Errorf("closing file: %w", err)
@@ -116,6 +122,8 @@ func Transpile(program []string, translators map[string]TranslatorFunc) (RunFunc
 	// --- Compile to a plugin --- \\
 	soname := fname + ".so"
 	cmd := exec.Command("go", "build", "-o", soname, "-buildmode=plugin", fname)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
 		return nil, fmt.Errorf("compiling temporary file: %w", err)
 	}
