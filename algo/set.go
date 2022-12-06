@@ -212,3 +212,18 @@ func Intersection[T comparable](sets ...Set[T]) Set[T] {
 	}
 	return out
 }
+
+// SetFromSlice saves keystrokes (it returns make(Set[E]).Insert(sl...))
+func SetFromSlice[E comparable, S ~[]E](sl S) Set[E] {
+	return make(Set[E], len(sl)).Insert(sl...)
+}
+
+// RuneSet saves keystrokes (it returns SetFromSlice([]rune(s)))
+func RuneSet(s string) Set[rune] {
+	return SetFromSlice([]rune(s))
+}
+
+// ByteSet saves keystrokes (it returns SetFromSlice([]byte(s)))
+func ByteSet(s string) Set[byte] {
+	return SetFromSlice([]byte(s))
+}
