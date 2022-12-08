@@ -268,6 +268,22 @@ func (g Dense[T]) RotateACW() Dense[T] {
 	return ng
 }
 
+// BytesFromStrings produces a byte grid from a slice of strings. Unequal-length
+// rows are treated as an error.
+func BytesFromStrings(s []string) (Dense[byte], error) {
+	return FromStringsFunc(s, func(s string) ([]byte, error) {
+		return []byte(s), nil
+	})
+}
+
+// RunesFromStrings produces a byte grid from a slice of strings. Unequal-length
+// rows are treated as an error.
+func RunesFromStrings(s []string) (Dense[rune], error) {
+	return FromStringsFunc(s, func(s string) ([]rune, error) {
+		return []rune(s), nil
+	})
+}
+
 // FromStringsFunc produces a grid from a slice of source strings s,
 // containing data for one row per element, and a function for parsing each
 // string into a `[]T` row. Unequal-length rows are treated as an error.

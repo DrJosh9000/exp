@@ -27,6 +27,8 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+
+	"github.com/DrJosh9000/exp/grid"
 )
 
 // Must returns t if err is nil. If err is not nil, it calls log.Fatal.
@@ -147,4 +149,14 @@ func MustReadInts(path, delim string) []int {
 		out[i] = n
 	}
 	return out
+}
+
+// MustReadByteGrid reads the entire file into memory and returns the contents
+// in the form of a dense byte grid.
+func MustReadByteGrid(path string) grid.Dense[byte] {
+	g, err := grid.BytesFromStrings(MustReadLines(path))
+	if err != nil {
+		log.Fatalf("MustReadByteGrid: BytesFromStrings error %v", err)
+	}
+	return g
 }
