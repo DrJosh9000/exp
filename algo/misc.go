@@ -30,4 +30,20 @@ var (
 		{-1, 0} /*0, 0*/, {1, 0},
 		{-1, 1}, {0, 1}, {1, 1},
 	}
+
+	// ULDR maps U, L, D, and R to a single step in that direction.
+	ULDR = map[rune]image.Point{
+		'U': {0, -1},
+		'R': {1, 0},
+		'D': {0, 1},
+		'L': {-1, 0},
+	}
+
+	// NESW maps N, E, S, and W to a single step in that direction.
+	NESW = map[rune]image.Point{
+		'N': {0, -1},
+		'E': {1, 0},
+		'S': {0, 1},
+		'W': {-1, 0},
+	}
 )
