@@ -102,10 +102,34 @@ func (g Dense[T]) String() string {
 		return "[]"
 	}
 
-	// Format the grid into strings with fmt.Sprint.
-	h := Map(g, func(x T) string {
-		return fmt.Sprint(x)
-	})
+	leftAlign := false
+	padding := true
+	sprint := func(x T) string { return fmt.Sprint(x) }
+
+	var t T
+	switch any(t).(type) {
+	case bool:
+		// Render bools as space(false) or █(true) with no padding
+		sprint = func(x T) string {
+			if t := any(x); t.(bool) {
+				return "█"
+			}
+			return " "
+		}
+		padding = false
+
+	case byte, rune:
+		// Render as themselves with no padding
+		sprint = func(x T) string { return fmt.Sprintf("%c", x) }
+		padding = false
+
+	case string:
+		// Left-align with gaps
+		leftAlign = true
+	}
+
+	// Format the grid into strings with sprint.
+	h := Map(g, sprint)
 
 	// Find column widths large enough for all items.
 	cw := make([]int, len(g[0]))
@@ -117,23 +141,25 @@ func (g Dense[T]) String() string {
 		}
 	}
 
-	// If T is a string type, left-align cells.
-	var t T
-	_, la := any(t).(string)
-
 	// Build the output string.
 	sb := new(strings.Builder)
 	sb.WriteString("[\n")
 	for _, row := range h {
-		sb.WriteString(" [")
+		sb.WriteString(" [ ")
 		for i, el := range row {
+			if !padding {
+				sb.WriteString(el)
+				continue
+			}
 			pad := strings.Repeat(" ", cw[i]-len(el))
-			sb.WriteRune(' ')
-			if !la {
+			if i != 0 {
+				sb.WriteRune(' ')
+			}
+			if !leftAlign {
 				sb.WriteString(pad)
 			}
 			sb.WriteString(el)
-			if la {
+			if leftAlign {
 				sb.WriteString(pad)
 			}
 		}

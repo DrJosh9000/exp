@@ -32,6 +32,11 @@ import "fmt"
 //	s.Insert(420, 69)   // as above
 type Set[T comparable] map[T]struct{}
 
+// MakeSet makes a set out of a list of items.
+func MakeSet[T comparable](items ...T) Set[T] {
+	return make(Set[T]).Insert(items...)
+}
+
 func (s Set[T]) String() string {
 	return fmt.Sprintf("set%v", s.ToSlice())
 }

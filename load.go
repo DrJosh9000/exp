@@ -21,6 +21,8 @@ package exp // import "github.com/DrJosh9000/exp"
 
 import (
 	"bufio"
+	"fmt"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -159,4 +161,16 @@ func MustReadByteGrid(path string) grid.Dense[byte] {
 		log.Fatalf("MustReadByteGrid: BytesFromStrings error %v", err)
 	}
 	return g
+}
+
+// Fmatchf wraps fmt.Fscanf, reporting whether input was scanned successfully.
+func Fmatchf(input io.Reader, format string, into ...any) bool {
+	_, err := fmt.Fscanf(input, format, into...)
+	return err == nil
+}
+
+// Smatchf wraps fmt.Sscanf, reporting whether input was scanned successfully.
+func Smatchf(input, format string, into ...any) bool {
+	_, err := fmt.Sscanf(input, format, into...)
+	return err == nil
 }
