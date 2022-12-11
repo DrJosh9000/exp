@@ -120,7 +120,9 @@ func (g Dense[T]) String() string {
 
 	case byte, rune:
 		// Render as themselves with no padding
-		sprint = func(x T) string { return fmt.Sprintf("%c", x) }
+		// Even though we know T is either byte or rune, we have to wrap x in
+		// an interface to make go vet happy
+		sprint = func(x T) string { return fmt.Sprintf("%c", any(x)) }
 		padding = false
 
 	case string:
