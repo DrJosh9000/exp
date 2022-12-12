@@ -104,34 +104,36 @@ func (g Dense[T]) String() string {
 
 	leftAlign := false
 	padding := true
-	sprint := func(x T) string { return fmt.Sprint(x) }
 
 	var t T
 	switch any(t).(type) {
-	case bool:
-		// Render bools as space(false) or █(true) with no padding
-		sprint = func(x T) string {
-			if t := any(x); t.(bool) {
+	case bool, byte, rune:
+		padding = false
+	case string:
+		leftAlign = true
+	}
+
+	// Format the grid into strings.
+	h := Map(g, func(x T) string {
+		switch x := any(x).(type) {
+		case string:
+			// Render as themselves
+			return x
+		case byte:
+			// Render as themselves with no padding
+			return string(x)
+		case rune:
+			// Render as themselves with no padding
+			return string(x)
+		case bool:
+			// Render bools as space(false) or █(true) with no padding
+			if x {
 				return "█"
 			}
 			return " "
 		}
-		padding = false
-
-	case byte, rune:
-		// Render as themselves with no padding
-		// Even though we know T is either byte or rune, we have to wrap x in
-		// an interface to make go vet happy
-		sprint = func(x T) string { return fmt.Sprintf("%c", any(x)) }
-		padding = false
-
-	case string:
-		// Left-align with gaps
-		leftAlign = true
-	}
-
-	// Format the grid into strings with sprint.
-	h := Map(g, sprint)
+		return fmt.Sprint(x)
+	})
 
 	// Find column widths large enough for all items.
 	cw := make([]int, len(g[0]))
