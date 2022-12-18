@@ -31,6 +31,22 @@ func Linfty(p image.Point) int {
 	return Max(Abs(p.X), Abs(p.Y))
 }
 
+// ExpandRect expands the Rectangle r to include p.
+func ExpandRect(r *image.Rectangle, p image.Point) {
+	if r.Min.X > p.X {
+		r.Min.X = p.X
+	}
+	if r.Min.Y > p.Y {
+		r.Min.Y = p.Y
+	}
+	if r.Max.X <= p.X {
+		r.Max.X = p.X + 1
+	}
+	if r.Max.Y <= p.Y {
+		r.Max.Y = p.Y + 1
+	}
+}
+
 // Vec3 is a three-dimensional vector type over E.
 type Vec3[E Real] [3]E
 
@@ -86,6 +102,13 @@ func (x Vec3[E]) L2() float64 {
 func (x Vec3[E]) Linfty() E {
 	return Max(Abs(x[0]), Abs(x[1]), Abs(x[2]))
 }
+
+// AABB3 is a three-dimensional axis-aligned bounding box.
+type AABB3[E Real] struct {
+	Min, Max Vec3[E]
+}
+
+// TODO: various image.Point/image.Rectangle-like methods
 
 // Vec4 is a four-dimensional vector type over E.
 type Vec4[E Real] [4]E
