@@ -16,7 +16,11 @@
 
 package grid
 
-import "image"
+import (
+	"image"
+
+	"github.com/DrJosh9000/exp/algo"
+)
 
 // Sparse is a sparse grid - a map from points in 2D to values.
 type Sparse[T any] map[image.Point]T
@@ -37,26 +41,8 @@ func (g Sparse[T]) Bounds() image.Rectangle {
 		return image.Rectangle{}
 	}
 	var bounds image.Rectangle
-	more := false
 	for p := range g {
-		if !more {
-			bounds.Min = p
-			bounds.Max = p.Add(image.Pt(1, 1))
-			more = true
-			continue
-		}
-		if p.X < bounds.Min.X {
-			bounds.Min.X = p.X
-		}
-		if p.X >= bounds.Max.X {
-			bounds.Max.X = p.X + 1
-		}
-		if p.Y < bounds.Min.Y {
-			bounds.Min.Y = p.Y
-		}
-		if p.Y >= bounds.Max.Y {
-			bounds.Max.Y = p.Y + 1
-		}
+		algo.ExpandRect(&bounds, p)
 	}
 	return bounds
 }

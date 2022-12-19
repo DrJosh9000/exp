@@ -33,10 +33,14 @@ func Linfty(p image.Point) int {
 
 // ExpandRect expands the Rectangle r to include p.
 func ExpandRect(r *image.Rectangle, p image.Point) {
-	if r.Min.X > p.X {
+	if r.Empty() {
+		r.Min, r.Max = p, p.Add(image.Point{1, 1})
+		return
+	}
+	if p.X < r.Min.X {
 		r.Min.X = p.X
 	}
-	if r.Min.Y > p.Y {
+	if p.Y < r.Min.Y {
 		r.Min.Y = p.Y
 	}
 	if r.Max.X <= p.X {
@@ -103,12 +107,48 @@ func (x Vec3[E]) Linfty() E {
 	return Max(Abs(x[0]), Abs(x[1]), Abs(x[2]))
 }
 
+// In reports if the vector is inside the bounding box.
+func (x Vec3[E]) In(r AABB3[E]) bool {
+	return r.Min[0] <= x[0] && x[0] < r.Max[0] &&
+		r.Min[1] <= x[1] && x[1] < r.Max[1] &&
+		r.Min[2] <= x[2] && x[2] < r.Max[2]
+}
+
 // AABB3 is a three-dimensional axis-aligned bounding box.
 type AABB3[E Real] struct {
 	Min, Max Vec3[E]
 }
 
-// TODO: various image.Point/image.Rectangle-like methods
+// Empty reports if the box is empty.
+func (r AABB3[E]) Empty() bool {
+	return r.Min[0] >= r.Max[0] || r.Min[1] >= r.Max[1] || r.Min[2] >= r.Max[2]
+}
+
+// Expand increases the box to include the given point.
+func (r *AABB3[E]) Expand(p Vec3[E]) {
+	if r.Empty() {
+		r.Min, r.Max = p, p.Add(Vec3[E]{1, 1, 1})
+		return
+	}
+	if p[0] < r.Min[0] {
+		r.Min[0] = p[0]
+	}
+	if p[1] < r.Min[1] {
+		r.Min[1] = p[1]
+	}
+	if p[2] < r.Min[2] {
+		r.Min[2] = p[2]
+	}
+	if r.Max[0] <= p[0] {
+		r.Max[0] = p[0] + 1
+	}
+	if r.Max[1] <= p[1] {
+		r.Max[1] = p[1] + 1
+	}
+	if r.Max[2] <= p[2] {
+		r.Max[2] = p[2] + 1
+	}
+}
 
 // Vec4 is a four-dimensional vector type over E.
 type Vec4[E Real] [4]E
@@ -168,4 +208,17 @@ func (x Vec4[E]) L2() float64 {
 // Linfty returns the L∞ norm.
 func (x Vec4[E]) Linfty() E {
 	return Max(Abs(x[0]), Abs(x[1]), Abs(x[2]), Abs(x[3]))
+}
+
+// In reports if the vector is inside the bounding box.
+func (x Vec4[E]) In(r AABB4[E]) bool {
+	return r.Min[0] <= x[0] && x[0] < r.Max[0] &&
+		r.Min[1] <= x[1] && x[1] < r.Max[1] &&
+		r.Min[2] <= x[2] && x[2] < r.Max[2] &&
+		r.Min[3] <= x[3] && x[3] < r.Max[3]
+}
+
+// AABB4 is a four-dimensional axis-aligned bounding box.
+type AABB4[E Real] struct {
+	Min, Max Vec4[E]
 }
