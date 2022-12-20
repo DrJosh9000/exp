@@ -62,13 +62,11 @@ func (n *ListNode[E]) ToSlice() []E {
 // Succ returns the mth item from n. For example, n.Succ(1) == n.Next.
 // m can be negative (n.Succ(-1) == n.Prev). Runs in time O(|m|).
 func (n *ListNode[E]) Succ(m int) *ListNode[E] {
-	if n == nil {
-		return nil
-	}
+	// TODO: consider a scheme for detecting loops through a circular list
 	for j := m; j < 0 && n != nil; j++ {
 		n = n.Prev
 	}
-	for j := m; j > 0 && n != nil; j-- {
+	for j := 0; j < m && n != nil; j++ {
 		n = n.Next
 	}
 	return n
