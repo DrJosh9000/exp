@@ -298,39 +298,64 @@ func (g Dense[T]) RotateACW() Dense[T] {
 	return ng
 }
 
-// BytesFromStrings produces a byte grid from a slice of strings. Unequal-length
-// rows are treated as an error.
-func BytesFromStrings(s []string) (Dense[byte], error) {
-	return FromStringsFunc(s, func(s string) ([]byte, error) {
-		return []byte(s), nil
-	})
+// Subgrid returns a copy of a portion of the grid.
+func (g Dense[T]) Subgrid(r image.Rectangle) Dense[T] {
+	if r.Empty() {
+		return nil
+	}
+	h, w := r.Dy(), r.Dx()
+	ng := Make[T](h, w)
+	for j := 0; j < h; j++ {
+		for i := 0; i < w; i++ {
+			ng[j][i] = g[j+r.Min.Y][i+r.Min.X]
+		}
+	}
+	return ng
 }
 
-// RunesFromStrings produces a byte grid from a slice of strings. Unequal-length
-// rows are treated as an error.
-func RunesFromStrings(s []string) (Dense[rune], error) {
-	return FromStringsFunc(s, func(s string) ([]rune, error) {
+// BytesFromStrings produces a byte grid from a slice of strings.
+func BytesFromStrings(s []string) Dense[byte] {
+	g, _ := FromStringsFunc(s, func(s string) ([]byte, error) {
+		return []byte(s), nil
+	})
+	return g
+}
+
+// RunesFromStrings produces a byte grid from a slice of strings.
+func RunesFromStrings(s []string) Dense[rune] {
+	g, _ := FromStringsFunc(s, func(s string) ([]rune, error) {
 		return []rune(s), nil
 	})
+	return g
 }
 
 // FromStringsFunc produces a grid from a slice of source strings s,
 // containing data for one row per element, and a function for parsing each
-// string into a `[]T` row. Unequal-length rows are treated as an error.
+// string into a `[]T` row. Uneven length rows are backfilled on the right
+// with the zero value for T, to make all rows equal ength.
 func FromStringsFunc[T any](s []string, parse func(string) ([]T, error)) (Dense[T], error) {
 	if len(s) == 0 {
 		return nil, nil
 	}
 	g := make(Dense[T], len(s))
+	w := 0
 	for j, row := range s {
 		t, err := parse(row)
 		if err != nil {
 			return nil, fmt.Errorf("parsing row %d: %w", j, err)
 		}
 		g[j] = t
-		if got, want := len(g[j]), len(g[0]); got != want {
-			return nil, fmt.Errorf("unequal row length (row %d length %d != row 0 length %d)", j, got, want)
+		if len(t) > w {
+			w = len(t)
 		}
+	}
+
+	// Backfill gaps on right
+	for k, t := range g {
+		if len(t) == w {
+			continue
+		}
+		g[k] = append(g[k], make([]T, w-len(t))...)
 	}
 	return g, nil
 }

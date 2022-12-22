@@ -156,11 +156,7 @@ func MustReadInts(path, delim string) []int {
 // MustReadByteGrid reads the entire file into memory and returns the contents
 // in the form of a dense byte grid.
 func MustReadByteGrid(path string) grid.Dense[byte] {
-	g, err := grid.BytesFromStrings(MustReadLines(path))
-	if err != nil {
-		log.Fatalf("MustReadByteGrid: BytesFromStrings error %v", err)
-	}
-	return g
+	return grid.BytesFromStrings(MustReadLines(path))
 }
 
 // Fmatchf wraps fmt.Fscanf, reporting whether input was scanned successfully.
