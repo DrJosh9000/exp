@@ -222,3 +222,40 @@ func (x Vec4[E]) In(r AABB4[E]) bool {
 type AABB4[E Real] struct {
 	Min, Max Vec4[E]
 }
+
+// Empty reports if the box is empty.
+func (r AABB4[E]) Empty() bool {
+	return r.Min[0] >= r.Max[0] || r.Min[1] >= r.Max[1] || r.Min[2] >= r.Max[2] || r.Min[3] >= r.Max[3]
+}
+
+// Expand increases the box to include the given point.
+func (r *AABB4[E]) Expand(p Vec4[E]) {
+	if r.Empty() {
+		r.Min, r.Max = p, p.Add(Vec4[E]{1, 1, 1, 1})
+		return
+	}
+	if p[0] < r.Min[0] {
+		r.Min[0] = p[0]
+	}
+	if p[1] < r.Min[1] {
+		r.Min[1] = p[1]
+	}
+	if p[2] < r.Min[2] {
+		r.Min[2] = p[2]
+	}
+	if p[3] < r.Min[3] {
+		r.Min[3] = p[3]
+	}
+	if r.Max[0] <= p[0] {
+		r.Max[0] = p[0] + 1
+	}
+	if r.Max[1] <= p[1] {
+		r.Max[1] = p[1] + 1
+	}
+	if r.Max[2] <= p[2] {
+		r.Max[2] = p[2] + 1
+	}
+	if r.Max[3] <= p[3] {
+		r.Max[3] = p[3] + 1
+	}
+}
