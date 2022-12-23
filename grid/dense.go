@@ -52,6 +52,23 @@ func Map[S, T any](g Dense[S], tf func(S) T) Dense[T] {
 	return ng
 }
 
+// MapToSparse converts a Dense[S] into a Sparse[T] by using a transformation
+// function tf, which should also report if the element should be kept.
+func MapToSparse[S, T any](g Dense[S], tf func(S) (T, bool)) Sparse[T] {
+	if len(g) == 0 {
+		return nil
+	}
+	ng := make(Sparse[T])
+	for j, row := range g {
+		for i, x := range row {
+			if v, ok := tf(x); ok {
+				ng[image.Point{i, j}] = v
+			}
+		}
+	}
+	return ng
+}
+
 // MapOrError converts a Dense[S] into a Dense[T] by using a transformation
 // function tf. On the first error returned by tf, MapOrError returns an error.
 func MapOrError[S, T any](g Dense[S], tf func(S) (T, error)) (Dense[T], error) {
