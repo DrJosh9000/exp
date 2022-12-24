@@ -46,4 +46,12 @@ var (
 		'S': {0, 1},
 		'W': {-1, 0},
 	}
+
+	// CGVL maps ^, >, v, and < to a single step in that direction.
+	CGVL = map[rune]image.Point{
+		'^': {0, -1},
+		'>': {1, 0},
+		'v': {0, 1},
+		'<': {-1, 0},
+	}
 )
