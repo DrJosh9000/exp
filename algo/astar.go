@@ -19,10 +19,12 @@ package algo
 
 import "golang.org/x/exp/constraints"
 
-// Dijkstra is an implementation of Dijkstra's algorithm for single-source
-// shortest paths on a directed, non-negatively weighted graph. It returns a map
-// of each node to the previous node in the shortest path to that node. This
-// predecessor map is only complete for visited nodes.
+// AStar implements A* search, a variant of Dijkstra's algorithm which takes
+// an additional heuristic h into account. h(x) should return an estimate of
+// d(x, end). If h(x) <= d(x, end) (that is, h underestimates) then AStar
+// will find the shortest path. It returns a map of each node to the previous
+// node in the shortest path to that node. This predecessor map is only complete
+// for visited nodes.
 //
 // The algorithm starts with a given start node and assumes the zero value for D
 // is the starting distance for that node. It then repeatedly calls visit,
@@ -34,7 +36,7 @@ import "golang.org/x/exp/constraints"
 // care of tracking nodes that have already been visited - since visit does not
 // need to track already-visited nodes, it can safely return all known neighbours
 // of a node.
-func Dijkstra[T comparable, D constraints.Ordered](start T, visit func(T, D) (map[T]D, error)) (map[T]T, error) {
+func AStar[T comparable, D constraints.Ordered](start T, h func(T) D, visit func(T, D) (map[T]D, error)) (map[T]T, error) {
 	prev := make(map[T]T)
 	done := make(map[T]bool)
 	var zero D
@@ -61,8 +63,29 @@ func Dijkstra[T comparable, D constraints.Ordered](start T, visit func(T, D) (ma
 			}
 			dist[item] = newdist
 			prev[item] = node
-			pq.Push(item, newdist)
+			pq.Push(item, newdist+h(item))
 		}
 	}
 	return prev, nil
+}
+
+// Dijkstra is an implementation of Dijkstra's algorithm for single-source
+// shortest paths on a directed, non-negatively weighted graph. It is equivalent
+// to AStar with a heuristic that always returns zero. It returns a map of each
+// node to the previous node in the shortest path to that node. This predecessor
+// map is only complete for visited nodes.
+//
+// The algorithm starts with a given start node and assumes the zero value for D
+// is the starting distance for that node. It then repeatedly calls visit,
+// passing each node and the length of the shortest path to that node. visit
+// should either return a new collection of items and weights (the neighbours of
+// the node it was given, and the weight of the edge connecting it) or an error.
+// If visit returns a non-nil error, the algorithm halts and passes both the error
+// and the partial map of predecessors, back to the caller. The algorithm takes
+// care of tracking nodes that have already been visited - since visit does not
+// need to track already-visited nodes, it can safely return all known neighbours
+// of a node.
+func Dijkstra[T comparable, D constraints.Ordered](start T, visit func(T, D) (map[T]D, error)) (map[T]T, error) {
+	var zero D
+	return AStar(start, func(T) D { return zero }, visit)
 }
