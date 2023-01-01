@@ -25,43 +25,62 @@ import (
 	"io"
 	"log"
 	"os"
-	"path/filepath"
-	"runtime"
 	"strconv"
 	"strings"
 
 	"github.com/DrJosh9000/exp/grid"
 )
 
-// Must returns t if err is nil. If err is not nil, it calls log.Fatal.
+// Must0 panics if err is not nil.
+// This is a helper intended for very simple programs (e.g. Advent of Code)
+// and is not recommended for production code (handle errors properly!)
+func Must0(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
+// Must returns t if err is nil. If err is not nil, it panics.
 // In other words, Must is a "do-or-die" wrapper for function calls that can
 // return a value and an error.
 // This is a helper intended for very simple programs (e.g. Advent of Code)
-// and is not recommended for production code (handle your errors yourself!)
-// particularly because the logged message will be unhelpful.
-// As a compromise for its unhelpfulness, the logged message includes the file
-// and line number of the call to Must.
+// and is not recommended for production code (handle errors properly!)
 func Must[T any](t T, err error) T {
 	if err != nil {
-		_, file, line, ok := runtime.Caller(1)
-		if !ok {
-			file, line = "unknown.go", 0
-		}
-		log.Fatalf("%s:%d: Must: %v", filepath.Base(file), line, err)
+		panic(err)
 	}
 	return t
 }
 
-// MustFunc converts a func that can return errors into a func that
-// calls log.Fatal on any error.
+// Must2 returns (t, u) if err is nil. If err is not nil, it panics.
 // This is a helper intended for very simple programs (e.g. Advent of Code)
-// and is not recommended for production code (handle your errors yourself!)
-// particularly because the logged message will be unhelpful.
+// and is not recommended for production code (handle errors properly!)
+func Must2[T, U any](t T, u U, err error) (T, U) {
+	if err != nil {
+		panic(err)
+	}
+	return t, u
+}
+
+// Must3 returns (t, u, v) if err is nil. If err is not nil, it panics.
+// This is a helper intended for very simple programs (e.g. Advent of Code)
+// and is not recommended for production code (handle errors properly!)
+func Must3[T, U, V any](t T, u U, v V, err error) (T, U, V) {
+	if err != nil {
+		panic(err)
+	}
+	return t, u, v
+}
+
+// MustFunc converts a func (S -> (T, error)) into a func (S -> T) that instead
+// panics on any error.
+// This is a helper intended for very simple programs (e.g. Advent of Code)
+// and is not recommended for production code (handle errors properly!)
 func MustFunc[S, T any](f func(s S) (T, error)) func(S) T {
 	return func(s S) T {
 		t, err := f(s)
 		if err != nil {
-			log.Fatalf("MustFunc: %v", err)
+			panic(err)
 		}
 		return t
 	}
