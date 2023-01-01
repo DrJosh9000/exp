@@ -315,17 +315,16 @@ func (g Dense[T]) RotateACW() Dense[T] {
 	return ng
 }
 
-// Subgrid returns a copy of a portion of the grid.
-func (g Dense[T]) Subgrid(r image.Rectangle) Dense[T] {
+// Resize returns a new grid that is r.Dx * r.Dy in size, containing values from
+// g. Resize can be used for producing subgrids and supergrids.
+func (g Dense[T]) Resize(r image.Rectangle) Dense[T] {
 	if r.Empty() {
 		return nil
 	}
-	h, w := r.Dy(), r.Dx()
-	ng := Make[T](h, w)
-	for j := 0; j < h; j++ {
-		for i := 0; i < w; i++ {
-			ng[j][i] = g[j+r.Min.Y][i+r.Min.X]
-		}
+	ng := Make[T](r.Dy(), r.Dx())
+	cr := g.Bounds().Intersect(r) // region in g being copied
+	for j := cr.Min.Y; j < cr.Max.Y; j++ {
+		copy(ng[j-r.Min.Y][cr.Min.X-r.Min.X:], g[j][cr.Min.X:cr.Max.X])
 	}
 	return ng
 }

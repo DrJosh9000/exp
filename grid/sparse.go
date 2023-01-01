@@ -47,6 +47,20 @@ func (g Sparse[T]) Bounds() image.Rectangle {
 	return bounds
 }
 
+// Subgrid returns a copy of a portion of the grid.
+func (g Sparse[T]) Subgrid(r image.Rectangle) Sparse[T] {
+	if r.Empty() {
+		return nil
+	}
+	ng := make(Sparse[T])
+	for p, x := range g {
+		if p.In(r) {
+			ng[p] = x
+		}
+	}
+	return ng
+}
+
 // ToDense converts a sparse grid into a dense grid and an offset (of the dense
 // grid relative to the original sparse grid).
 func (g Sparse[T]) ToDense() (Dense[T], image.Point) {

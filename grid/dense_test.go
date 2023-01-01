@@ -17,6 +17,7 @@
 package grid
 
 import (
+	"image"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -107,5 +108,61 @@ func TestRotateACW(t *testing.T) {
 	got := g.RotateACW()
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("g.RotateACW diff:\n%s", diff)
+	}
+}
+
+func TestResize(t *testing.T) {
+	g := Dense[int]{
+		[]int{0, 1, 2, 3},
+		[]int{3, 4, 5, 6},
+		[]int{6, 7, 8, 9},
+	}
+
+	tests := []struct {
+		r    image.Rectangle
+		want Dense[int]
+	}{
+		{
+			r: image.Rect(1, 1, 3, 2),
+			want: Dense[int]{
+				[]int{4, 5},
+			},
+		},
+		{
+			r:    image.Rect(0, 0, 4, 3),
+			want: g,
+		},
+		{
+			r: image.Rect(-1, -1, 5, 4),
+			want: Dense[int]{
+				[]int{0, 0, 0, 0, 0, 0},
+				[]int{0, 0, 1, 2, 3, 0},
+				[]int{0, 3, 4, 5, 6, 0},
+				[]int{0, 6, 7, 8, 9, 0},
+				[]int{0, 0, 0, 0, 0, 0},
+			},
+		},
+		{
+			r: image.Rect(-1, -1, 3, 2),
+			want: Dense[int]{
+				[]int{0, 0, 0, 0},
+				[]int{0, 0, 1, 2},
+				[]int{0, 3, 4, 5},
+			},
+		},
+		{
+			r: image.Rect(1, 1, 5, 4),
+			want: Dense[int]{
+				[]int{4, 5, 6, 0},
+				[]int{7, 8, 9, 0},
+				[]int{0, 0, 0, 0},
+			},
+		},
+	}
+
+	for _, test := range tests {
+		if diff := cmp.Diff(g.Resize(test.r), test.want); diff != "" {
+			t.Errorf("g.Resize(%v) diff:\n%s", test.r, diff)
+		}
 	}
 }
