@@ -123,6 +123,10 @@ func TestResize(t *testing.T) {
 		want Dense[int]
 	}{
 		{
+			r:    image.Rect(1, 1, 1, 1),
+			want: nil,
+		},
+		{
 			r: image.Rect(1, 1, 3, 2),
 			want: Dense[int]{
 				[]int{4, 5},
