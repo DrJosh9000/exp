@@ -46,11 +46,38 @@ func MapOrErr[S ~[]X, X, Y any](in S, f func(X) (Y, error)) ([]Y, error) {
 	return out, nil
 }
 
+// MustMap calls f with each element of in, to build the output slice.
+// It panics with the first error returned by f.
+func MustMap[S ~[]X, X, Y any](in S, f func(X) (Y, error)) []Y {
+	out := make([]Y, len(in))
+	for i, x := range in {
+		y, err := f(x)
+		if err != nil {
+			panic(fmt.Sprintf("at index %d: %v", i, err))
+		}
+		out[i] = y
+	}
+	return out
+}
+
 // MapMap is like Map, but for maps. This seems thoroughly pointless.
 func MapMap[M ~map[K1]V1, K1, K2 comparable, V1, V2 any](m M, f func(K1, V1) (K2, V2)) map[K2]V2 {
 	n := make(map[K2]V2, len(m))
 	for k1, v1 := range m {
 		k2, v2 := f(k1, v1)
+		n[k2] = v2
+	}
+	return n
+}
+
+// MustMapMap is like MustMap, but for maps. This seems extra pointless.
+func MustMapMap[M ~map[K1]V1, K1, K2 comparable, V1, V2 any](m M, f func(K1, V1) (K2, V2, error)) map[K2]V2 {
+	n := make(map[K2]V2, len(m))
+	for k1, v1 := range m {
+		k2, v2, err := f(k1, v1)
+		if err != nil {
+			panic(fmt.Sprintf("at key %v: %v", k1, err))
+		}
 		n[k2] = v2
 	}
 	return n
