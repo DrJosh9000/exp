@@ -137,10 +137,16 @@ func (g Dense[T]) String() string {
 			// Render as themselves
 			return x
 		case byte:
-			// Render as themselves with no padding
+			// Render as themselves with no padding, except for \0
+			if x == 0 {
+				return "␀"
+			}
 			return string(x)
 		case rune:
-			// Render as themselves with no padding
+			// Render as themselves with no padding, except for \0
+			if x == 0 {
+				return "␀"
+			}
 			return string(x)
 		case bool:
 			// Render bools as space(false) or █(true) with no padding
