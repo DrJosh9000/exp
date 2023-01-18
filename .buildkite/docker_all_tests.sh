@@ -6,4 +6,5 @@ docker run -t -i --rm --init \
   --workdir /workdir \
   --runtime runsc \
   --label com.buildkite.job-id=${BUILDKITE_JOB_ID} \
+  --env BUILDKITE_ANALYTICS_TOKEN=${BUILDKITE_ANALYTICS_TOKEN} \
   golang:latest /bin/sh -e -c ./.buildkite/all_tests.sh
