@@ -28,12 +28,3 @@ func RangeCh[T any](ctx context.Context, ch <-chan T, f func(T) error) error {
 		}
 	}
 }
-
-func ExampleRangeCh() {
-	ctx := context.Background()
-	ch := make(chan struct{})
-	
-	_ = RangeCh(ctx, ch, func(struct{}) error {
-		return nil
-	})
-}
