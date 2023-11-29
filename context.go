@@ -15,14 +15,14 @@ func RangeCh[T any](ctx context.Context, ch <-chan T, f func(T) error) error {
 		case t, open := <-ch:
 			if !open {
 				return nil
-			}	
+			}
 			if err := f(t); err != nil {
 				if errors.Is(err, Break) {
 					return nil
 				}
 				return err
 			}
-		
+
 		case <-ctx.Done():
 			return ctx.Err()
 		}
