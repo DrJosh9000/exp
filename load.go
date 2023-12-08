@@ -31,6 +31,11 @@ import (
 	"github.com/DrJosh9000/exp/grid"
 )
 
+// Ptr returns a pointer to a variable having the value t.
+// (Because you can't just say &true, &42, or &"foo"; you have to put it in a
+// variable first.)
+func Ptr[T any](t T) *T { return &t }
+
 // Must0 panics if err is not nil.
 // This is a helper intended for very simple programs (e.g. Advent of Code)
 // and is not recommended for production code (handle errors properly!)
