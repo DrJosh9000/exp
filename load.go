@@ -86,6 +86,11 @@ func MustFunc[S, T any](f func(s S) (T, error)) func(S) T {
 	}
 }
 
+// MustAtoi parses the string as an integer, or panics.
+// This is a helper intended for very simple programs (e.g. Advent of Code)
+// and is not recommended for production code (handle errors properly!)
+func MustAtoi(s string) int { return Must(strconv.Atoi(s)) }
+
 // MustForEachLineIn calls cb with each line in the file.
 // It uses a bufio.Scanner internally, which can fail on longer lines.
 // If an error is encountered, it calls log.Fatal.
