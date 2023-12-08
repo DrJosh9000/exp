@@ -62,6 +62,8 @@ func XGCD[T constraints.Integer](a, b T) (d, x, y T) {
 
 // Max returns the greatest argument (using `>`). If no arguments are provided,
 // Max returns the zero value for T.
+// Most of the time you want the max builtin. This implementation handles
+// zero items and slices via ellipsis.
 func Max[T cmp.Ordered](x ...T) T {
 	var m T
 	if len(x) == 0 {
@@ -78,6 +80,8 @@ func Max[T cmp.Ordered](x ...T) T {
 
 // Min returns the least argument (using `<`). If no arguments are provided, Min
 // returns the zero value for T.
+// Most of the time you want the min builtin. This implementation handles
+// zero items and slices via ellipsis.
 func Min[T cmp.Ordered](x ...T) T {
 	var m T
 	if len(x) == 0 {

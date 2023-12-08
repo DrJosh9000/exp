@@ -16,11 +16,25 @@
 
 package algo
 
-import "cmp"
+import (
+	"cmp"
+	"fmt"
 
-// Range represents an inclusive range of values.
+	"golang.org/x/exp/constraints"
+)
+
+// Range represents an **inclusive** range of values.
 type Range[T cmp.Ordered] struct {
 	Min, Max T
+}
+
+// NewRange returns a range [from, to].
+func NewRange[T cmp.Ordered](from, to T) Range[T] {
+	return Range[T]{Min: from, Max: to}
+}
+
+func (r Range[T]) String() string {
+	return fmt.Sprintf("[%v, %v]", r.Min, r.Max)
 }
 
 // Contains reports if r contains x.
@@ -53,8 +67,8 @@ func (r Range[T]) IsEmpty() bool {
 // Intersection returns the intersection of the two ranges. (It could be empty.)
 func (r Range[T]) Intersection(s Range[T]) Range[T] {
 	return Range[T]{
-		Min: Max(r.Min, s.Min),
-		Max: Min(r.Max, s.Max),
+		Min: max(r.Min, s.Min),
+		Max: min(r.Max, s.Max),
 	}
 }
 
@@ -62,7 +76,23 @@ func (r Range[T]) Intersection(s Range[T]) Range[T] {
 // don't overlap either r or s).
 func (r Range[T]) Union(s Range[T]) Range[T] {
 	return Range[T]{
-		Min: Min(r.Min, s.Min),
-		Max: Max(r.Max, s.Max),
+		Min: min(r.Min, s.Min),
+		Max: max(r.Max, s.Max),
 	}
+}
+
+// RangeSubtract returns the set difference of two ranges (r - s).
+// If r and s do not overlap, it returns only r.
+// If s completely overlaps r, it returns an empty slice.
+// If r overlaps s, and (r - s) is not empty, it returns one or two ranges
+// depending on how the ranges overlap.
+func RangeSubtract[T constraints.Integer](r, s Range[T]) []Range[T] {
+	var rs []Range[T]
+	if r0 := (Range[T]{Min: r.Min, Max: s.Min - 1}); !r0.IsEmpty() {
+		rs = append(rs, r0)
+	}
+	if r0 := (Range[T]{Min: s.Max + 1, Max: r.Max}); !r0.IsEmpty() {
+		rs = append(rs, r0)
+	}
+	return rs
 }
