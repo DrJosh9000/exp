@@ -17,14 +17,13 @@
 package algo
 
 import (
+	"cmp"
 	"container/heap"
-
-	"golang.org/x/exp/constraints"
 )
 
 // PriQueue implements a priority queue of items of type T each having a
 // priority of type D. It uses container/heap under the hood.
-type PriQueue[T any, D constraints.Ordered] minHeap[T, D]
+type PriQueue[T any, D cmp.Ordered] minHeap[T, D]
 
 // Push adds an item to the queue with a priority.
 func (pq *PriQueue[T, D]) Push(item T, priority D) {
@@ -45,7 +44,7 @@ func (pq *PriQueue[T, D]) Pop() (T, D) {
 func (pq *PriQueue[T, D]) Len() int { return len(*pq) }
 
 // minHeap provides the underlying implementation of heap.Interface.
-type minHeap[T any, D constraints.Ordered] []WeightedItem[T, D]
+type minHeap[T any, D cmp.Ordered] []WeightedItem[T, D]
 
 func (h minHeap[T, D]) Len() int           { return len(h) }
 func (h minHeap[T, D]) Less(i, j int) bool { return h[i].Weight < h[j].Weight }
@@ -59,7 +58,7 @@ func (h *minHeap[T, D]) Pop() any {
 }
 
 // WeightedItem is an item together with a weight value.
-type WeightedItem[T any, D constraints.Ordered] struct {
+type WeightedItem[T any, D cmp.Ordered] struct {
 	Item   T
 	Weight D
 }

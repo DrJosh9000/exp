@@ -16,7 +16,11 @@
 
 package algo
 
-import "golang.org/x/exp/constraints"
+import (
+	"cmp"
+
+	"golang.org/x/exp/constraints"
+)
 
 // Abs returns the absolute value of x (with no regard for negative overflow).
 //
@@ -58,7 +62,7 @@ func XGCD[T constraints.Integer](a, b T) (d, x, y T) {
 
 // Max returns the greatest argument (using `>`). If no arguments are provided,
 // Max returns the zero value for T.
-func Max[T constraints.Ordered](x ...T) T {
+func Max[T cmp.Ordered](x ...T) T {
 	var m T
 	if len(x) == 0 {
 		return m
@@ -74,7 +78,7 @@ func Max[T constraints.Ordered](x ...T) T {
 
 // Min returns the least argument (using `<`). If no arguments are provided, Min
 // returns the zero value for T.
-func Min[T constraints.Ordered](x ...T) T {
+func Min[T cmp.Ordered](x ...T) T {
 	var m T
 	if len(x) == 0 {
 		return m
@@ -112,7 +116,7 @@ func Prod[S ~[]E, E Numeric](in S) E {
 // key and the value itself. If len(m) == 0, the zero values for K and V are
 // returned. If there is a tie, the first key encountered is returned (which
 // could be random).
-func MapMin[M ~map[K]V, K comparable, V constraints.Ordered](m M) (K, V) {
+func MapMin[M ~map[K]V, K comparable, V cmp.Ordered](m M) (K, V) {
 	b := false
 	var bestk K
 	var minv V
@@ -128,7 +132,7 @@ func MapMin[M ~map[K]V, K comparable, V constraints.Ordered](m M) (K, V) {
 // key and the value itself. If len(m) == 0, the zero values for K and V are
 // returned. If there is a tie, the first key encountered is returned (which
 // could be random).
-func MapMax[M ~map[K]V, K comparable, V constraints.Ordered](m M) (K, V) {
+func MapMax[M ~map[K]V, K comparable, V cmp.Ordered](m M) (K, V) {
 	b := false
 	var bestk K
 	var maxv V
@@ -143,7 +147,7 @@ func MapMax[M ~map[K]V, K comparable, V constraints.Ordered](m M) (K, V) {
 // MapRange reports the minimum and maximum values in the map m, and their
 // corresponding keys. It does the work of MapMin and MapMax in one loop.
 // If m is empty, the zero values for K and V are returned.
-func MapRange[M ~map[K]V, K comparable, V constraints.Ordered](m M) (mink, maxk K, minv, maxv V) {
+func MapRange[M ~map[K]V, K comparable, V cmp.Ordered](m M) (mink, maxk K, minv, maxv V) {
 	minb, maxb := false, false
 	for k, v := range m {
 		if !minb || v < minv {
@@ -158,7 +162,7 @@ func MapRange[M ~map[K]V, K comparable, V constraints.Ordered](m M) (mink, maxk 
 
 // MapKeyRange reports the minimum and maximum keys in the map m.
 // If m is empty, the zero value for K is returned.
-func MapKeyRange[M ~map[K]V, K constraints.Ordered, V any](m M) (min, max K) {
+func MapKeyRange[M ~map[K]V, K cmp.Ordered, V any](m M) (min, max K) {
 	minb, maxb := false, false
 	for k := range m {
 		if !minb || k < min {
@@ -173,7 +177,7 @@ func MapKeyRange[M ~map[K]V, K constraints.Ordered, V any](m M) (min, max K) {
 
 // NextPermutation reorders s into the next permutation (in the lexicographic
 // order), reporting if it was able to do so. Based on Knuth.
-func NextPermutation[S ~[]E, E constraints.Ordered](s S) bool {
+func NextPermutation[S ~[]E, E cmp.Ordered](s S) bool {
 	if len(s) < 2 {
 		return false
 	}

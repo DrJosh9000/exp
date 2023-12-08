@@ -17,7 +17,7 @@
 // Package algo implements a few generic algorithms.
 package algo
 
-import "golang.org/x/exp/constraints"
+import "cmp"
 
 // AStar implements A* search, a variant of Dijkstra's algorithm which takes
 // an additional heuristic h into account. h(x) should return an estimate of
@@ -36,7 +36,7 @@ import "golang.org/x/exp/constraints"
 // care of tracking nodes that have already been visited - since visit does not
 // need to track already-visited nodes, it can safely return all known neighbours
 // of a node.
-func AStar[T comparable, D constraints.Ordered](start T, h func(T) D, visit func(T, D) (map[T]D, error)) (map[T]T, error) {
+func AStar[T comparable, D cmp.Ordered](start T, h func(T) D, visit func(T, D) (map[T]D, error)) (map[T]T, error) {
 	prev := make(map[T]T)
 	done := make(map[T]bool)
 	var zero D
@@ -85,7 +85,7 @@ func AStar[T comparable, D constraints.Ordered](start T, h func(T) D, visit func
 // care of tracking nodes that have already been visited - since visit does not
 // need to track already-visited nodes, it can safely return all known neighbours
 // of a node.
-func Dijkstra[T comparable, D constraints.Ordered](start T, visit func(T, D) (map[T]D, error)) (map[T]T, error) {
+func Dijkstra[T comparable, D cmp.Ordered](start T, visit func(T, D) (map[T]D, error)) (map[T]T, error) {
 	var zero D
 	return AStar(start, func(T) D { return zero }, visit)
 }

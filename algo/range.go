@@ -16,10 +16,10 @@
 
 package algo
 
-import "golang.org/x/exp/constraints"
+import "cmp"
 
 // Range represents an inclusive range of values.
-type Range[T constraints.Ordered] struct {
+type Range[T cmp.Ordered] struct {
 	Min, Max T
 }
 
