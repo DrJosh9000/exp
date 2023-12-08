@@ -28,7 +28,7 @@ func L1(p image.Point) int {
 
 // Linfty returns the L∞ norm of p.
 func Linfty(p image.Point) int {
-	return Max(Abs(p.X), Abs(p.Y))
+	return max(Abs(p.X), Abs(p.Y))
 }
 
 // ExpandRect expands the Rectangle r to include p.
@@ -104,7 +104,7 @@ func (x Vec3[E]) L2() float64 {
 
 // Linfty returns the L∞ norm.
 func (x Vec3[E]) Linfty() E {
-	return Max(Abs(x[0]), Abs(x[1]), Abs(x[2]))
+	return max(Abs(x[0]), Abs(x[1]), Abs(x[2]))
 }
 
 // In reports if the vector is inside the bounding box.
@@ -207,7 +207,7 @@ func (x Vec4[E]) L2() float64 {
 
 // Linfty returns the L∞ norm.
 func (x Vec4[E]) Linfty() E {
-	return Max(Abs(x[0]), Abs(x[1]), Abs(x[2]), Abs(x[3]))
+	return max(Abs(x[0]), Abs(x[1]), Abs(x[2]), Abs(x[3]))
 }
 
 // In reports if the vector is inside the bounding box.
