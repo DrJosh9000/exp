@@ -21,6 +21,35 @@ import (
 	"sort"
 )
 
+// SortSlice is like sort.Slice, but the less func receives the items
+// themselves.
+func SortSlice[S ~[]E, E any](s S, less func(a, b E) bool) {
+	sort.Sort(sliceByLess[S, E]{
+		slice: s,
+		less:  less,
+	})
+}
+
+// SortSlice is like sort.SliceStable, but the less func receives the items
+// themselves.
+func SortSliceStable[S ~[]E, E any](s S, less func(a, b E) bool) {
+	sort.Stable(sliceByLess[S, E]{
+		slice: s,
+		less:  less,
+	})
+}
+
+type sliceByLess[S ~[]E, E any] struct {
+	slice S
+	less  func(a, b E) bool
+}
+
+func (b sliceByLess[S, E]) Len() int      { return len(b.slice) }
+func (b sliceByLess[S, E]) Swap(i, j int) { b.slice[i], b.slice[j] = b.slice[j], b.slice[i] }
+func (b sliceByLess[S, E]) Less(i, j int) bool {
+	return b.less(b.slice[i], b.slice[j])
+}
+
 // SortAsc sorts the slice in ascending order.
 func SortAsc[S ~[]E, E cmp.Ordered](s S) {
 	sort.Slice(s, func(i, j int) bool { return s[i] < s[j] })
