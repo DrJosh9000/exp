@@ -1,23 +1,37 @@
 package algo
 
-// CyclicPredict predicts what would appear at slice index n if the input slice
-// were that long. It does this by linearly searching for a cycle at the end.
-func CyclicPredict[S ~[]E, E comparable](s S, n int) E {
+import (
+	"golang.org/x/exp/constraints"
+)
+
+// IntegerPredict predicts what would appear at slice index n if the input slice
+// were that long. It does this by searching for a cycle (modulo a fixed diff)
+// and then extrapolating.
+func IntegerPredict[S ~[]E, E constraints.Integer](s S, n int) E {
 	if n < 0 {
-		panic("negative input provided to CyclicPredict")
+		panic("negative input provided to IntegerPredict")
 	}
 	if n < len(s) {
 		return s[n]
 	}
-	seen := make(map[E]int)
-	for i := range s {
-		j := len(s) - i - 1
-		x := s[j]
-		if k, yes := seen[x]; yes {
-			cyc := k - j
-			return s[len(s)-cyc:][(n-len(s))%cyc]
+	ls1 := len(s) - 1
+	var period int
+	var slope E
+periodLoop:
+	for period = len(s) / 2; period > 0; period-- {
+		slope = s[ls1] - s[ls1-period]
+		for i := 1; i < period; i++ {
+			j := ls1 - i
+			if dy := s[j] - s[j-period]; dy != slope {
+				continue periodLoop
+			}
 		}
-		seen[x] = j
+		break periodLoop
 	}
-	panic("no cycle detected")
+	if period <= 0 {
+		panic("no cycle detected")
+	}
+	//log.Printf("found period = %d, slope = %d", period, slope)
+	rem := n - len(s)
+	return slope*E(1+rem/period) + s[len(s)-period:][rem%period]
 }
