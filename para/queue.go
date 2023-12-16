@@ -1,6 +1,9 @@
 package para
 
-import "sync"
+import (
+	"runtime"
+	"sync"
+)
 
 // Queue implements a goroutine-safe queue of items based on a channel.
 type Queue[E any] struct {
@@ -21,23 +24,42 @@ func NewQueue[E any](items ...E) *Queue[E] {
 	return q
 }
 
-// Push appends to the end of the queue. Be sure to Push before calling Done.
-func (q *Queue[E]) Push(e E) {
-	q.µ.Lock()
-	q.ch <- e
-	q.c++
-	q.µ.Unlock()
+// Process calls f on each item in the queue in parallel (with GOMAXPROCS
+// goroutines). f can enqueue more items by calling q.Push. It blocks until the
+// queue is empty and all items have been processed.
+func (q *Queue[E]) Process(f func(E)) {
+	N := runtime.GOMAXPROCS(0)
+	var wg sync.WaitGroup
+
+	for i := 0; i < N; i++ {
+		wg.Add(1)
+
+		go func() {
+			defer wg.Done()
+
+			for e := range q.ch {
+				f(e)
+				q.done()
+			}
+		}()
+	}
+
+	wg.Wait()
 }
 
-// Pop is equivalent to a channel read.
-func (q *Queue[E]) Pop() (e E, ok bool) {
-	e, ok = <-q.ch
-	return e, ok
+// Push appends to the end of the queue.
+func (q *Queue[E]) Push(items ...E) {
+	for _, e := range items {
+		q.µ.Lock()
+		q.c++
+		q.ch <- e
+		q.µ.Unlock()
+	}
 }
 
-// Done decrements the queue's internal counter. If there are no outstanding
+// done decrements the queue's internal counter. If there are no outstanding
 // items and no queued items, the channel is closed.
-func (q *Queue[E]) Done() {
+func (q *Queue[E]) done() {
 	q.µ.Lock()
 	q.c--
 	if q.c == 0 {
