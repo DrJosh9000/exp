@@ -226,6 +226,11 @@ func (g Dense[T]) Bounds() image.Rectangle {
 	return image.Rect(0, 0, w, h)
 }
 
+// At returns g[p.Y][p.X].
+func (g Dense[T]) At(p image.Point) T {
+	return g[p.Y][p.X]
+}
+
 // Fill fills the grid with the value v.
 func (g Dense[T]) Fill(v T) {
 	for _, row := range g {
