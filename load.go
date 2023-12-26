@@ -101,6 +101,17 @@ func MustAtoi(s string) int { return Must(strconv.Atoi(s)) }
 // and is not recommended for production code (handle errors properly!)
 func MustSscanf(s, f string, a ...any) { Must(fmt.Sscanf(s, f, a...)) }
 
+// MustCut is a version of strings.Cut that panics if sep is not found within s.
+// This is a helper intended for very simple programs (e.g. Advent of Code)
+// and is not recommended for production code (handle errors properly!)
+func MustCut(s, sep string) (before, after string) {
+	before, after, ok := strings.Cut(s, sep)
+	if !ok {
+		panic(fmt.Sprintf("%q not found in %q", sep, s))
+	}
+	return before, after
+}
+
 // MustForEachLineIn calls cb with each line in the file.
 // It uses a bufio.Scanner internally, which can fail on longer lines.
 // If an error is encountered, it calls log.Fatal.

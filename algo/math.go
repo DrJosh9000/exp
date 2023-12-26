@@ -106,6 +106,29 @@ func Sum[S ~[]E, E Addable](in S) E {
 	return accum
 }
 
+// PartialSums returns the partial sums (out[i] = in[0] + in[1] + ... + in[i])
+func PartialSums[S ~[]E, E Addable](in S) S {
+	out := make(S, len(in))
+	var accum E
+	for i, x := range in {
+		accum += x
+		out[i] = accum
+	}
+	return out
+}
+
+// Differences returns the differences between each consecutive pair of elements.
+func Differences[S ~[]E, E constraints.Integer](in S) S {
+	if len(in) <= 1 {
+		return nil
+	}
+	out := make(S, len(in)-1)
+	for i, x := range in[1:] {
+		out[i] = x - in[i]
+	}
+	return out
+}
+
 // Prod computes the product of elements in any slice where the element type
 // is numeric. If len(in) == 0, 1 is returned.
 func Prod[S ~[]E, E Numeric](in S) E {
