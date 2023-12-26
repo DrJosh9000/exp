@@ -91,6 +91,11 @@ func (x Vec3[E]) Dot(y Vec3[E]) E {
 	return x[0]*y[0] + x[1]*y[1] + x[2]*y[2]
 }
 
+// ToFloat converts the vector into floating point.
+func (x Vec3[E]) ToFloat() Vec3[float64] {
+	return Vec3[float64]{float64(x[0]), float64(x[1]), float64(x[2])}
+}
+
 // L1 returns the Manhattan norm.
 func (x Vec3[E]) L1() E {
 	return Abs(x[0]) + Abs(x[1]) + Abs(x[2])

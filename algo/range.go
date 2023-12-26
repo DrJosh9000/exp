@@ -96,3 +96,20 @@ func RangeSubtract[T constraints.Integer](r, s Range[T]) []Range[T] {
 	}
 	return rs
 }
+
+// RangeAdd adds a number to a range.
+func RangeAdd[T Real](r Range[T], d T) Range[T] {
+	r.Min += d
+	r.Max += d
+	return r
+}
+
+// RangeMul multiplies a range by a number.
+func RangeMul[T Real](r Range[T], m T) Range[T] {
+	r.Min *= m
+	r.Max *= m
+	if m < 0 {
+		r.Min, r.Max = r.Max, r.Min
+	}
+	return r
+}
