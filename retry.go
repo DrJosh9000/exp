@@ -20,7 +20,7 @@ import (
 //		     // nothing
 //	  }
 //
-// will take around 2 seconds (sum of 4 random durations from U[0, 1)), but
+// will take around 2 seconds (sum of 4 random durations D ~ U[0, 1)), but
 //
 //	  for range Retry(ctx, 5, 1*time.Second, 1.0) {
 //		     time.Sleep(2*time.Second)
