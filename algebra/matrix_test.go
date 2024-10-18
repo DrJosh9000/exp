@@ -19,7 +19,7 @@ package algebra
 import (
 	"testing"
 
-	"github.com/DrJosh9000/exp/grid"
+	"drjosh.dev/exp/grid"
 	"github.com/google/go-cmp/cmp"
 )
 

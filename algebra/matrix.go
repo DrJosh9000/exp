@@ -16,7 +16,7 @@
 
 package algebra
 
-import "github.com/DrJosh9000/exp/grid"
+import "drjosh.dev/exp/grid"
 
 // Matrix implements matrix algebra on grid.Dense[T] given a ring R.
 type Matrix[T any, R Ring[T]] struct{}

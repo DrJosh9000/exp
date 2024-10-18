@@ -17,7 +17,7 @@
 // Package exp contains some code that should be considered experimental and
 // comes with absolutely no guarantees whatsoever (particularly around
 // compatibility, consistency, or functionality).
-package exp // import "github.com/DrJosh9000/exp"
+package exp // import "drjosh.dev/exp"
 
 import (
 	"bufio"
@@ -28,7 +28,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/DrJosh9000/exp/grid"
+	"drjosh.dev/exp/grid"
 )
 
 // Ptr returns a pointer to a variable having the value t.

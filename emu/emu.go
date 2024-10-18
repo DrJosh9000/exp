@@ -31,7 +31,7 @@ import (
 	"plugin"
 	"strings"
 
-	"github.com/DrJosh9000/exp/algo"
+	"drjosh.dev/exp/algo"
 )
 
 const preamble = `package main

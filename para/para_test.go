@@ -3,7 +3,7 @@ package para
 import (
 	"testing"
 
-	"github.com/DrJosh9000/exp/algo"
+	"drjosh.dev/exp/algo"
 	"github.com/google/go-cmp/cmp"
 )
 

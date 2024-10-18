@@ -1,4 +1,4 @@
-module github.com/DrJosh9000/exp
+module drjosh.dev/exp
 
 go 1.21.4
 

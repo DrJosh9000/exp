@@ -5,7 +5,7 @@ import (
 	"runtime"
 	"sync"
 
-	"github.com/DrJosh9000/exp/algo"
+	"drjosh.dev/exp/algo"
 )
 
 // Do calls f with each element of in.

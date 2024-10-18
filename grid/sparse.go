@@ -19,7 +19,7 @@ package grid
 import (
 	"image"
 
-	"github.com/DrJosh9000/exp/algo"
+	"drjosh.dev/exp/algo"
 )
 
 // Sparse is a sparse grid - a map from points in 2D to values.
