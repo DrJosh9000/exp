@@ -2,31 +2,32 @@ package exp
 
 import (
 	"context"
+	"iter"
 	"math/rand"
 	"time"
 )
 
-// Retry2 is like Retry, but returns a Go 1.22 "GOEXPERIMENT=rangefunc" style
-// "iterator" and does not use an extra goroutine under the hood.
+// Retry is like RetryChan, but returns a Go 1.23
+// iterator and does not use an extra goroutine under the hood.
 // With the rangefunc experiment enabled, you can write:
 //
-//	for t := range exp.Retry2(ctx, 5, 1*time.Second, 2.0) {
+//	for t := range exp.Retry(ctx, 5, 1*time.Second, 2.0) {
 //		// try to do thing here
 //	}
 //
-// Without Go 1.22 and the experiment, you can exercise it manually:
+// Without Go 1.23, you can exercise it manually:
 //
-//	exp.Retry2(ctx, 5, 1*time.Second, 2.0)(func(t time.Time) bool {
+//	exp.Retry(ctx, 5, 1*time.Second, 2.0)(func(t time.Time) bool {
 //		// try to do thing here
 //		// return true to keep retrying
 //		return true
 //	})
 //
 // Because there is no underlying goroutine, to match the behaviour of original-
-// flavour Retry, Retry2 measures how long `yield` takes and subtracts it from
+// flavour Retry, Retry measures how long `yield` takes and subtracts it from
 // the next wait. Because `yield` can take arbitrarily long, it can therefore be
 // called again immediately.
-func Retry2(ctx context.Context, count int, initial time.Duration, grow float64) func(func(time.Time) bool) {
+func Retry(ctx context.Context, count int, initial time.Duration, grow float64) iter.Seq[time.Time] {
 	return func(yield func(time.Time) bool) {
 		if err := ctx.Err(); err != nil {
 			return

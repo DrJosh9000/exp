@@ -6,12 +6,12 @@ import (
 	"time"
 )
 
-func ExampleRetry() {
+func ExampleRetryChan() {
 	ctx, canc := context.WithCancel(context.Background())
 	defer canc()
 
 	attempts := 0
-	for range Retry(ctx, 5, 10*time.Millisecond, 2.0) {
+	for range RetryChan(ctx, 5, 10*time.Millisecond, 2.0) {
 		attempts++
 	}
 
