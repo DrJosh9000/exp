@@ -23,6 +23,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"iter"
 	"log"
 	"os"
 	"strconv"
@@ -130,6 +131,31 @@ func MustForEachLineIn(path string, cb func(line string)) {
 	}
 	if err := sc.Err(); err != nil {
 		log.Fatalf("MustForEachLineIn: scanner: %v", err)
+	}
+}
+
+// LinesInFile yields each line in the file.
+// It uses a bufio.Scanner internally, which can fail on longer lines.
+// If an error is encountered, it calls log.Fatal.
+// This is a helper intended for very simple programs (e.g. Advent of Code)
+// and is not recommended for production code, particularly because the
+// logged message may be somewhat unhelpful.
+func LinesInFile(path string) iter.Seq[string] {
+	return func(yield func(string) bool) {
+		f, err := os.Open(path)
+		if err != nil {
+			log.Fatalf("MustForEachLineIn: opening file: %v", err)
+		}
+		defer f.Close()
+		sc := bufio.NewScanner(f)
+		for sc.Scan() {
+			if !yield(sc.Text()) {
+				return
+			}
+		}
+		if err := sc.Err(); err != nil {
+			log.Fatalf("MustForEachLineIn: scanner: %v", err)
+		}
 	}
 }
 
