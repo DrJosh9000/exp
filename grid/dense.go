@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"image"
 	"image/color"
-	"iter"
 	"strings"
 )
 
@@ -28,13 +27,11 @@ import (
 type Dense[T any] [][]T
 
 // All iterates all points in the grid (in row major order).
-func (g Dense[T]) All() iter.Seq2[image.Point, T] {
-	return func(yield func(image.Point, T) bool) {
-		for y, row := range g {
-			for x, t := range row {
-				if !yield(image.Pt(x, y), t) {
-					return
-				}
+func (g Dense[T]) All(yield func(image.Point, T) bool) {
+	for y, row := range g {
+		for x, t := range row {
+			if !yield(image.Pt(x, y), t) {
+				return
 			}
 		}
 	}
