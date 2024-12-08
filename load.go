@@ -241,3 +241,14 @@ func Smatchf(input, format string, into ...any) bool {
 	_, err := fmt.Sscanf(input, format, into...)
 	return err == nil
 }
+
+// NonEmpty returns a copy of s with all non-empty strings.
+func NonEmpty[S ~[]string](s S) S {
+	t := make(S, 0, len(s))
+	for _, x := range s {
+		if x != "" {
+			t = append(t, x)
+		}
+	}
+	return t
+}

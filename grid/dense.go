@@ -242,6 +242,16 @@ func (g Dense[T]) At(p image.Point) T {
 	return g[p.Y][p.X]
 }
 
+// Atp returns &g[p.Y][p.X].
+func (g Dense[T]) Atp(p image.Point) *T {
+	return &g[p.Y][p.X]
+}
+
+// Set performs g[p.Y][p.X] = v.
+func (g Dense[T]) Set(p image.Point, v T) {
+	g[p.Y][p.X] = v
+}
+
 // Fill fills the grid with the value v.
 func (g Dense[T]) Fill(v T) {
 	for _, row := range g {

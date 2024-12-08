@@ -18,7 +18,8 @@ package algo
 
 import (
 	"fmt"
-	
+	"iter"
+
 	"golang.org/x/exp/constraints"
 )
 
@@ -152,6 +153,24 @@ func MapCount[M ~map[K]V, K, V comparable](m M, v V) int {
 func Freq[S ~[]E, E comparable](s S) map[E]int {
 	h := make(map[E]int)
 	for _, x := range s {
+		h[x]++
+	}
+	return h
+}
+
+// FreqIter counts the frequency of each item in an iterator.
+func FreqIter[E comparable](i iter.Seq[E]) map[E]int {
+	h := make(map[E]int)
+	for x := range i {
+		h[x]++
+	}
+	return h
+}
+
+// FreqIter2 counts the frequency of each second item in an iterator.
+func FreqIter2[X any, E comparable](i iter.Seq2[X, E]) map[E]int {
+	h := make(map[E]int)
+	for _, x := range i {
 		h[x]++
 	}
 	return h
