@@ -57,15 +57,12 @@ func AStar[T comparable, D cmp.Ordered](start T, h func(T) D, visit func(T, D) (
 			return prev, err
 		}
 		for newnode, weight := range it {
-			if done[newnode] {
-				continue
-			}
 			newdist := dist[node] + weight
 			if olddist, seen := dist[newnode]; seen {
-				if olddist < newdist {
+				switch {
+				case olddist < newdist:
 					continue
-				}
-				if olddist == newdist {
+				case olddist == newdist:
 					prev[newnode] = append(prev[newnode], node)
 					continue
 				}
