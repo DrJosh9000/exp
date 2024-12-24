@@ -16,14 +16,16 @@
 
 package algo
 
+import "iter"
+
 // FloodFill is an algorithm for finding single-source shortest paths in an
 // unweighted directed graph. It follows the same conventions as the Dijkstra
 // function. It assumes the weight of each edge is always 1, tallying distances
 // as ints. This flood-fill is generic and makes minimal assumptions about each
 // node. A more specific implementation than this one is more appropriate in
 // some cases, e.g. flood-filling a 2D grid.
-func FloodFill[T comparable](start T, visit func(T, int) ([]T, error)) (map[T]T, error) {
-	prev := make(map[T]T)
+func FloodFill[T comparable](start T, visit func(T, int) (iter.Seq[T], error)) (map[T][]T, error) {
+	prev := make(map[T][]T)
 	dist := map[T]int{start: 0}
 	q := []T{start}
 	var node T
@@ -33,14 +35,24 @@ func FloodFill[T comparable](start T, visit func(T, int) ([]T, error)) (map[T]T,
 		if err != nil {
 			return prev, err
 		}
-		for _, n := range next {
+		if next == nil {
+			continue
+		}
+		for newnode := range next {
 			newdist := dist[node] + 1
-			if olddist, seen := dist[n]; seen && olddist <= newdist {
-				continue
+			olddist, seen := dist[newnode]
+			if seen {
+				switch {
+				case olddist < newdist:
+					continue
+				case olddist == newdist:
+					prev[newnode] = append(prev[newnode], node)
+					continue
+				}
 			}
-			dist[n] = newdist
-			prev[n] = node
-			q = append(q, n)
+			dist[newnode] = newdist
+			prev[newnode] = append(prev[newnode], node)
+			q = append(q, newnode)
 		}
 	}
 	return prev, nil
