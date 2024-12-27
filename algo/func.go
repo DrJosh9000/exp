@@ -35,6 +35,31 @@ func Map[S ~[]X, X, Y any](in S, f func(X) Y) []Y {
 	return out
 }
 
+// MapI is like Map, but works on an iterator.
+func MapI[X, Y any](in iter.Seq[X], f func(X) Y) iter.Seq[Y] {
+	return func(yield func(Y) bool) {
+		for x := range in {
+			if !yield(f(x)) {
+				break
+			}
+		}
+	}
+}
+
+// Filt filters an iterator.
+func Filt[X any](in iter.Seq[X], f func(X) bool) iter.Seq[X] {
+	return func(yield func(X) bool) {
+		for x := range in {
+			if !f(x) {
+				continue
+			}
+			if !yield(x) {
+				break
+			}
+		}
+	}
+}
+
 // MapOrErr calls f with each element of in, to build the output slice.
 // It stops and returns the first error returned by f.
 func MapOrErr[S ~[]X, X, Y any](in S, f func(X) (Y, error)) ([]Y, error) {
