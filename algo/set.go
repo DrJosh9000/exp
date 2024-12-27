@@ -41,6 +41,14 @@ func (s Set[T]) String() string {
 	return fmt.Sprintf("set%v", s.ToSlice())
 }
 
+// Any returns any item from the set, and panics if the set is empty.
+func (s Set[T]) Any() T {
+	for x := range s {
+		return x
+	}
+	panic("no items in empty set")
+}
+
 // ToSlice returns a new slice with all the elements of the set in random order.
 func (s Set[T]) ToSlice() []T {
 	sl := make([]T, 0, len(s))
@@ -70,6 +78,16 @@ func (s Set[T]) Insert(x ...T) Set[T] {
 func (s Set[T]) Contains(x T) bool {
 	_, c := s[x]
 	return c
+}
+
+// ContainsAll reports whether s contains all arguments.
+func (s Set[T]) ContainsAll(xs ...T) bool {
+	for _, x := range xs {
+		if !s.Contains(x) {
+			return false
+		}
+	}
+	return true
 }
 
 // Disjoint reports whether s and t have an empty intersection.
