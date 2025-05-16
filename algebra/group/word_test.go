@@ -59,6 +59,14 @@ func TestWordReduce(t *testing.T) {
 		{Word{{'a', 1}, {'b', 1}}, Word{{'a', 1}, {'b', 1}}},
 		{Word{{'a', 1}, {'b', 1}, {'b', -1}, {'a', -1}}, Word{}},
 		{Word{{'a', 2}, {'b', -3}, {'b', 3}, {'a', -2}}, Word{}},
+		{
+			input: Word{{'a', 1}, {'b', 1}, {'a', -1}, {'b', -1}},
+			want:  Word{{'a', 1}, {'b', 1}, {'a', -1}, {'b', -1}},
+		},
+		{
+			input: Word{{'a', 2}, {'b', -3}, {'a', 3}, {'b', -2}},
+			want:  Word{{'a', 2}, {'b', -3}, {'a', 3}, {'b', -2}},
+		},
 	}
 
 	for _, test := range tests {
@@ -93,7 +101,7 @@ func TestWordInverse(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		got := test.input.Inverse()
+		got := test.input.Inv()
 		if diff := cmp.Diff(got, test.want); diff != "" {
 			t.Errorf("(%v).Inverse() = %v, want %v", test.input, got, test.want)
 		}
@@ -123,7 +131,7 @@ func TestWordRotate(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		got := test.input.Rotate()
+		got := test.input.LRot()
 		if diff := cmp.Diff(got, test.want); diff != "" {
 			t.Errorf("(%v).Rotate() = %v, want %v", test.input, got, test.want)
 		}
