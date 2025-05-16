@@ -74,21 +74,21 @@ func TestWordInverse(t *testing.T) {
 	tests := []struct {
 		input, want Word
 	}{
-		// Most of the input set reduce to the identity, so...
 		{Word{}, Word{}},
 		{Word{{'a', 1}}, Word{{'a', -1}}},
 		{Word{{'a', 1}, {'a', 1}}, Word{{'a', -1}, {'a', -1}}},
 		{Word{{'a', 1}, {'a', -1}}, Word{{'a', 1}, {'a', -1}}},
-		{Word{{'b', -1}, {'b', 1}}, Word{{'b', -1}, {'b', 1}}},
-		{Word{{'a', 2}, {'a', -1}}, Word{{'a', 1}, {'a', -2}}},
+		{Word{{'a', 1}, {'b', -1}}, Word{{'b', 1}, {'a', -1}}},
+		{Word{{'a', -1}, {'b', 1}}, Word{{'b', -1}, {'a', 1}}},
+		{Word{{'a', 2}, {'b', -1}}, Word{{'b', 1}, {'a', -2}}},
 		{Word{{'a', 1}, {'b', 1}}, Word{{'b', -1}, {'a', -1}}},
 		{
-			input: Word{{'a', 1}, {'b', 1}, {'b', -1}, {'a', -1}},
-			want:  Word{{'a', 1}, {'b', 1}, {'b', -1}, {'a', -1}},
+			input: Word{{'a', 1}, {'b', 1}, {'a', -1}, {'b', -1}},
+			want:  Word{{'b', 1}, {'a', 1}, {'b', -1}, {'a', -1}},
 		},
 		{
-			input: Word{{'a', 2}, {'b', -3}, {'b', 3}, {'a', -2}},
-			want:  Word{{'a', 2}, {'b', -3}, {'b', 3}, {'a', -2}},
+			input: Word{{'a', 2}, {'b', -3}, {'a', 3}, {'b', -2}},
+			want:  Word{{'b', 2}, {'a', -3}, {'b', 3}, {'a', -2}},
 		},
 	}
 
@@ -104,7 +104,6 @@ func TestWordRotate(t *testing.T) {
 	tests := []struct {
 		input, want Word
 	}{
-		// Most of the input set reduce to the identity, so...
 		{Word{}, Word{}},
 		{Word{{'a', 1}}, Word{{'a', 1}}},
 		{Word{{'a', 1}, {'a', 1}}, Word{{'a', 2}}},

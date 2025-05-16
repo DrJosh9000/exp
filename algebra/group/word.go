@@ -46,17 +46,17 @@ type Basic struct {
 	P int
 }
 
-// Generator applies "Sign" to b.P.
+// Gen applies "Sign" to b.P.
 // Examples:
-// - (a⁷).Generator() = a
-// - (b⁻⁵).Generator() = b⁻¹
-// - (c⁰).Generator() = c⁰
-func (b Basic) Generator() Basic {
+// - (a⁷).Gen() = a
+// - (b⁻⁵).Gen() = b⁻¹
+// - (c⁰).Gen() = c⁰
+func (b Basic) Gen() Basic {
 	return Basic{b.G, Sign(b.P)}
 }
 
-// Inverse returns the inverse of b.
-func (b Basic) Inverse() Basic {
+// Inv returns the inverse of b.
+func (b Basic) Inv() Basic {
 	return Basic{G: b.G, P: -b.P}
 }
 
@@ -105,11 +105,11 @@ func (w Word) Reduce() Word {
 	return x
 }
 
-// Inverse returns a new word containing the inverse of w.
+// Inv returns a new word containing the inverse of w.
 // It does not require the input to be reduced, nor does it reduce
 // its output.
-// Example: (aba⁻¹b⁻¹).Inverse() = bab⁻¹a⁻¹.
-func (w Word) Inverse() Word {
+// Example: (aba⁻¹b⁻¹).Inv() = bab⁻¹a⁻¹.
+func (w Word) Inv() Word {
 	x := slices.Clone(w)
 	slices.Reverse(x)
 	for i := range x {
@@ -118,21 +118,40 @@ func (w Word) Inverse() Word {
 	return x
 }
 
-// Rotate returns the word left-rotated by a single generator.
+// LRot returns the word left-rotated by a single generator.
+// For an input word W = ab...yz, where a...z are generators,
+// W.LRot() = a⁻¹Wa = b...yza.
 // If the word is a relator for a presentation, this returns an
 // equivalent relator.
 // It does not require the receiver to be reduced, but reduces
-// its output if it is nontrivial.
+// its output if the receiver is nontrivial.
 // Examples:
-// - (aba⁻¹b⁻¹).Rotate() = ba⁻¹b⁻¹a
-// - (a³ba³).Rotate() = a²ba⁴
-func (w Word) Rotate() Word {
+// - (aba⁻¹b⁻¹).LRot() = bab⁻¹a
+// - (a³ba³).LRot() = a²ba⁴
+func (w Word) LRot() Word {
 	if len(w) <= 1 {
 		return w
 	}
-	// It's easier to reason about this by just using the algebra
-	g := w[0].Generator()
-	return Mul(Word{g.Inverse()}, w, Word{g})
+	g := w[0].Gen()
+	return Mul(Word{g.Inv()}, w, Word{g})
+}
+
+// RRot returns the word right-rotated by a single generator.
+// For an input word W = ab...yz, where a...z are generators,
+// W.RRot() = zWz⁻¹ = zab...y.
+// If the word is a relator for a presentation, this returns an
+// equivalent relator.
+// It does not require the receiver to be reduced, but reduces
+// its output if the receiver is nontrivial.
+// Examples:
+// - (aba⁻¹b⁻¹).RRot() = b⁻¹aba⁻¹
+// - (a³ba³).RRot() = a⁴ba²
+func (w Word) RRot() Word {
+	if len(w) <= 1 {
+		return w
+	}
+	g := w[len(w)-1].Gen()
+	return Mul(Word{g}, w, Word{g.Inv()})
 }
 
 func (w Word) String() string {
