@@ -60,6 +60,11 @@ func (b Basic) Inv() Basic {
 	return Basic{G: b.G, P: -b.P}
 }
 
+// Pow returns b^n.
+func (b Basic) Pow(n int) Basic {
+	return Basic{G: b.G, P: b.P * n}
+}
+
 func (b Basic) String() string {
 	if b.P == 1 {
 		return string(b.G)
@@ -74,6 +79,35 @@ type Word []Basic
 // Mul concatenates and then freely reduces.
 func Mul(ws ...Word) Word {
 	return slices.Concat(ws...).Reduce()
+}
+
+// Pow returns w^n. It doesn't go out of its way to reduce the result.
+func (w Word) Pow(n int) Word {
+	if n == 0 || len(w) == 0 {
+		return nil
+	}
+	if len(w) == 1 {
+		return Word{w[0].Pow(n)}
+	}
+	if n < 0 {
+		w = w.Inv()
+		n = -n
+	}
+	switch n {
+	case 0:
+		return nil
+	case 1:
+		return w
+	case 2:
+		return Mul(w, w)
+	default:
+		y := w.Pow(n / 2)
+		y = Mul(y, y)
+		if n%2 == 1 {
+			y = Mul(y, w)
+		}
+		return y
+	}
 }
 
 // Reduce freely reduces the word. Note that it modifies the original word.
